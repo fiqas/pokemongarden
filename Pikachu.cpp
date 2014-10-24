@@ -13,9 +13,9 @@ Pikachu::Pikachu(void) {
 	SetRestitution(0.7f);
 	SetFixedRotation(true); //Pikaczu nie ma rotacji.
 	SetShapeType(PhysicsActor::SHAPETYPE_BOX);
-	InitPhysics();
 	SetPosition(0.0f, 0.0f);
 	SetLayer(3);
+	InitPhysics();
 
 	facing_front = true;
 	facing_back = false;
@@ -64,21 +64,16 @@ void Pikachu::Update(float dt) {
 	float xVector = 0.0f; 
 	float yVector = 0.0f;
 
-	
-	/*if ((currentVelocity.x < 0.0f) && facing_right) FlipLeft();
-	else if ((currentVelocity.x > 0.0f) && !facing_right) FlipRight();
-	if ((currentVelocity.y < 0.0f) && facing_front) FlipBack();
-	else if ((currentVelocity.y > 0.0f) && !facing_front) FlipFront();
-	*/
 	if(theInput.IsKeyDown(ANGEL_KEY_RIGHTARROW)) {
 		xVector = 1.0f;
-		
+
 		if(facing_right) {
 			PlaySpriteAnimation(0.1f, SAT_OneShot, 12, 15, "walkingRight"); 
 		} else {
 			FlipRight();
 			PlaySpriteAnimation(0.1f, SAT_OneShot, 12, 15, "walkingRight"); 
 		}
+
 	}
 
 	if(theInput.IsKeyDown(ANGEL_KEY_LEFTARROW)) {
@@ -114,6 +109,7 @@ void Pikachu::Update(float dt) {
 			PlaySpriteAnimation(0.1f, SAT_OneShot, 0, 3, "walkingDown"); 
 		}
 	}
+
 	//Ruch poziomo
 	float desiredVelocity = xVector * maxVel;	
 	float velocityChange = desiredVelocity - currentVelocity.x;
