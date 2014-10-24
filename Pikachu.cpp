@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "Pikachu.h"
 
+//SIEMKA <3
+
+
 Pikachu::Pikachu(void) {
 
 	SetName("Pikachu");
