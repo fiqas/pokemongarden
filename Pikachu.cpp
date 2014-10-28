@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "Pikachu.h"
 
-//SIEMKA <3
-
-
 Pikachu::Pikachu(void) {
 
 	SetName("Pikachu");
@@ -17,11 +14,39 @@ Pikachu::Pikachu(void) {
 	SetPosition(0.0f, 0.0f);
 	SetLayer(3);
 	InitPhysics();
+	Switchboard();	
+
+	//Trzeba zdefiniowaæ "czujniki kolizji na pikaczu".
+	b2PolygonShape sensorShape;
+	b2FixtureDef sensorFixtureDef;
+	sensorFixtureDef.isSensor = true;
+	sensorFixtureDef.shape = &sensorShape;
+
+	sensorShape.SetAsBox(0.5f, 0.5f, b2Vec2(0.0f, -(GetSize().Y * 0.5f)), 0.0f);
+	_footSensor = GetBody()->CreateFixture(&sensorFixtureDef);
+	_footSensor->SetUserData(this);
+
+	sensorShape.SetAsBox(0.5f, 0.5f, b2Vec2(0.0f, (GetSize().Y * 0.5f)), 0.0f); 
+	_headSensor = GetBody()->CreateFixture(&sensorFixtureDef);
+	_headSensor->SetUserData(this);
+
+	sensorShape.SetAsBox(0.5f, 0.5f, b2Vec2((GetSize().X * 0.5f), 0.0f), 0.0f); 
+	_rightSensor = GetBody()->CreateFixture(&sensorFixtureDef);
+	_rightSensor->SetUserData(this);
+
+	sensorShape.SetAsBox(0.5f, 0.5f, b2Vec2(-(GetSize().X * 0.5f), 0.0f), 0.0f); 
+	_leftSensor = GetBody()->CreateFixture(&sensorFixtureDef);
+	_leftSensor->SetUserData(this);
+}
+
+void Pikachu::Switchboard() {
+
 	theSwitchboard.SubscribeTo(this, "GoLeft");
 	theSwitchboard.SubscribeTo(this, "GoRight");
 	theSwitchboard.SubscribeTo(this, "GoFront");
 	theSwitchboard.SubscribeTo(this, "GoBack");
-
+	theSwitchboard.SubscribeTo(this, "CollisionStartWith" + GetName());
+	theSwitchboard.SubscribeTo(this, "CollisionEndWith" + GetName());
 }
 
 void Pikachu::Update(float dt) {	
@@ -103,6 +128,84 @@ void Pikachu::ReceiveMessage(Message* message) {
 
 	String message_info = message->GetMessageName();
 
+	//Kolizje
+
+	if ( message_info == "CollisionStartWith" + GetName() || message_info == "CollisionEndWith" + GetName()){
+		
+		TypedMessage<b2Contact*>* contactMessage = (TypedMessage<b2Contact*>*)message;
+		b2Contact* contact = contactMessage->GetValue();
+		PhysicsActor* other = NULL; // coœ z czym siê zderzamy
+		b2Fixture* fixture = NULL;
+
+		if (contact->GetFixtureA()->GetUserData() == this) {
+			
+			other = (PhysicsActor*)contact->GetFixtureB()->GetBody()->GetUserData();
+			fixture = contact->GetFixtureA();
+		
+		}
+		
+		else {
+			
+			other = (PhysicsActor*)contact->GetFixtureA()->GetBody()->GetUserData();
+			fixture = contact->GetFixtureB();
+		
+		}
+		
+		if (other == NULL) {
+
+			return;
+	
+		}
+
+
+		if (fixture == _headSensor || fixture == _footSensor || fixture == _rightSensor || fixture == _leftSensor )
+		{
+			if (message_info == "CollisionStartWith" + GetName())
+			{
+				std::cout << "I hit : " ;
+				//Sprawdzamy po tagach z czym uderzy³ siê Pikaczu
+				if (other->IsTagged("BigTree")) {
+					
+					std::cout << "big tree" << std::endl;
+
+				}
+
+				else if (other->IsTagged("SmallTree")) {	
+				
+					std::cout << "small tree" << std::endl;
+
+				}
+
+				else if (other->IsTagged("fence")) {
+					
+					std::cout << "fence" << std::endl;
+				
+				}
+
+				else if (other->IsTagged("squirtle")) {
+					
+					std::cout << "squirtle" << std::endl;
+				
+				}
+
+				else if (other->IsTagged("Pokemon")) {
+					
+					std::cout << "pokemon" << std::endl;
+				
+				}
+
+				else {
+					//To siê stanie jeœli dany przedmiot/pokemon nie jest otagowany
+					std::cout << "I don't know what it is! " << std::endl;
+				
+				}
+
+				
+			}
+		}
+	}
+	
+	//Animacja ruchu
 	if(message_info == "GoFront") {
 
 		PlaySpriteAnimation(0.1f, SAT_OneShot, 4, 6, "WalkingFront");

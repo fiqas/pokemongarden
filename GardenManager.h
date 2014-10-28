@@ -2,6 +2,7 @@
 #include "Pikachu.h"
 #include "Pokemon.h"
 #include "Object.h"
+#include "CollisionManager.h"
 
 //centrum dowodzenia gr¹
 
@@ -10,7 +11,5 @@ public:
 	GardenManager(void);
 	virtual ~GardenManager(void);
 	Pikachu* pikachu;
-	Pokemon *squirtle;
-	Object *tree;
 };
 
