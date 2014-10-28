@@ -2,17 +2,23 @@
 #include "Pokemon.h"
 
 
-Pokemon::Pokemon(float x, float y , String pathName, int frameNumber)
-{
+Pokemon::Pokemon(float x, float y, float sizex, float sizey, String pathName, String name, String colortag, String nametag, String typetag, String actiontag) {
+	
+	SetName(name);
 	SetLayer(3);
-	SetSize(1.2f, 1.3f);
-	SetDensity(0.0f); // jest nieruchomy
-	SetFriction(0.0f); // tarcie wynosi 0, rzecz jasna.
-	SetRestitution(0.1f); // pikaczu lekko siê odbije.
+	SetSize(sizex, sizey);
+	SetDensity(0.0f); 
+	SetFriction(0.0f); 
+	SetRestitution(0.1f);
 	SetPosition(x,y);
 	LoadSpriteFrames(pathName, GL_CLAMP, GL_LINEAR);
-	SetSpriteFrame(frameNumber);
+	SetSpriteFrame(0);
+	Tag(colortag);
+	Tag(nametag);
+	Tag(typetag);
+	Tag(actiontag);
 	InitPhysics();
+
 }
 
 

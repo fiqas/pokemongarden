@@ -1,8 +1,5 @@
 #pragma once
-#include "Pikachu.h"
-#include "Pokemon.h"
-#include "Object.h"
-#include "CollisionManager.h"
+#include "stdafx.h"
 
 //centrum dowodzenia gr¹
 
@@ -11,5 +8,8 @@ public:
 	GardenManager(void);
 	virtual ~GardenManager(void);
 	Pikachu* pikachu;
+	void CreatePokemon(float x, float y , float sizex, float sizey, String pathName, String name, String colortag, String nametag, String typetag, String actiontag);
+	void AddBigTree();
+	void AddPokemons();
 };
 

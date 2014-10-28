@@ -1,9 +1,8 @@
 #pragma once
-class Object : public Actor
+class Object : public PhysicsActor
 {
 public:
-	Object(float x, float y , String pathName, int frameNumber, float sx, float sy, String name);
+	Object(float x, float y , String pathName, int frameNumber, float sx, float sy);
 	~Object(void);
-	
 };
 

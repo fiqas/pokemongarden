@@ -5,6 +5,11 @@
 
 
 #include "Angel.h"
+#include "GardenManager.h"
+#include "Pikachu.h"
+#include "Pokemon.h"
+#include "Object.h"
+#include "CollisionManager.h"
 
 
 // TODO: reference additional headers your program requires here
