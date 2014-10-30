@@ -10,3 +10,6 @@ Google API (wkrótce).
 Opisanie działania, wizji:
 
 Sterowanie komendami głosowymi/tekstowymi, Pikachu odpowiada i prowadzi iterakcje z otoczeniem.
+
+SZEF : Maximiliana Behnke
+RESZTA SKŁADU : Sandra Ambroziak, Maciej Soprych, Krzysztof Korościk.
