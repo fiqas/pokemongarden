@@ -18,8 +18,10 @@ Pikachu::Pikachu(void) {
 	theSwitchboard.SubscribeTo(this, "GoRight");
 	theSwitchboard.SubscribeTo(this, "GoFront");
 	theSwitchboard.SubscribeTo(this, "GoBack");
-	
-		//Trzeba zdefiniowa� "czujniki kolizji na pikaczu".
+	theSwitchboard.SubscribeTo(this, "GotoSquirtle");	
+
+	gotosquirtle = new GotoSquirtle();
+
 	b2PolygonShape sensorShape;
 	b2FixtureDef sensorFixtureDef;
 	sensorFixtureDef.isSensor = true;
@@ -87,6 +89,12 @@ void Pikachu::Update(float dt) {
 	theSwitchboard.Broadcast(new Message("NotMoving"));
 
 	}
+
+	//if(theInput.IsKeyDown(ANGEL_KEY_S)) {
+
+	//	theSwitchboard.Broadcast(new Message("GotoSquirtle"));
+
+	//}
 
 	impulseY = GoUpDown(yVector, currentVelocity);
 	impulseX = GoLeftRight(xVector, currentVelocity);
@@ -224,6 +232,12 @@ void Pikachu::ReceiveMessage(Message* message) {
 	if(message_info == "GoRight") {
 
 		PlaySpriteAnimation(0.1f, SAT_OneShot, 12, 15, "WalkingRight");
+
+	}
+
+	if(message_info == "GotoSquirtle") {
+
+		//gotosquirtle->Initialize("Squirtle", 0.2f);
 
 	}
 

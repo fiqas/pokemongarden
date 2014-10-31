@@ -13,6 +13,8 @@ public:
 	b2Fixture* _rightSensor;
 	b2Fixture* _leftSensor;
 	b2Fixture* _headSensor;
+	
+	GotoSquirtle* gotosquirtle;
 
 	virtual void Update(float dt);
 	virtual void Render();

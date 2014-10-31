@@ -10,6 +10,7 @@
 #include "Pokemon.h"
 #include "Object.h"
 #include "CollisionManager.h"
+#include "GotoSquirtle.h"
 
 
 // TODO: reference additional headers your program requires here
