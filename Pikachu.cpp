@@ -3,6 +3,8 @@
 
 Pikachu::Pikachu(void) {
 
+	//ustawienia pikachu
+
 	SetName("Pikachu");
 	LoadSpriteFrames("Resources/Images/pikachu/pikachu_001.png", GL_CLAMP, GL_LINEAR);
 	SetSpriteFrame(0);
@@ -14,13 +16,16 @@ Pikachu::Pikachu(void) {
 	SetPosition(0.0f, 0.0f);
 	SetLayer(3);
 	InitPhysics();
+
+	//reaguje na dane komunikaty
+
 	theSwitchboard.SubscribeTo(this, "GoLeft");
 	theSwitchboard.SubscribeTo(this, "GoRight");
 	theSwitchboard.SubscribeTo(this, "GoFront");
 	theSwitchboard.SubscribeTo(this, "GoBack");
-	theSwitchboard.SubscribeTo(this, "GotoSquirtle");	
+	theSwitchboard.SubscribeTo(this, "GotoSquirtle");
 
-	gotosquirtle = new GotoSquirtle();
+	//sensory kontaktu
 
 	b2PolygonShape sensorShape;
 	b2FixtureDef sensorFixtureDef;
@@ -48,13 +53,21 @@ Pikachu::Pikachu(void) {
 
 void Pikachu::Update(float dt) {	
 
-	PhysicsActor::Update(dt);
+	Sentient::Update(dt);
+
 	b2Vec2 currentVelocity = GetBody()->GetLinearVelocity();
 	float maxVel = theTuning.GetFloat("PikachuMaxSpeed");
 	float xVector = 0.0f; 
 	float yVector = 0.0f;
 	float impulseY = 0.0f;
 	float impulseX = 0.0f;
+
+	if(theInput.IsKeyDown(ANGEL_KEY_S)) {
+
+		std::cout << "wchodze w s" << std::endl;
+		theSwitchboard.Broadcast(new Message("GotoSquirtle"));
+
+	}
 
 	if(theInput.IsKeyDown(ANGEL_KEY_RIGHTARROW)) {
 
@@ -89,12 +102,6 @@ void Pikachu::Update(float dt) {
 	theSwitchboard.Broadcast(new Message("NotMoving"));
 
 	}
-
-	//if(theInput.IsKeyDown(ANGEL_KEY_S)) {
-
-	//	theSwitchboard.Broadcast(new Message("GotoSquirtle"));
-
-	//}
 
 	impulseY = GoUpDown(yVector, currentVelocity);
 	impulseX = GoLeftRight(xVector, currentVelocity);
@@ -160,55 +167,6 @@ void Pikachu::ReceiveMessage(Message* message) {
 	
 		}
 
-	//	if (fixture == _headSensor || fixture == _footSensor || fixture == _rightSensor || fixture == _leftSensor ) {
-	//	
-	//		//Od Maxi: ten fragment w ogóle nie ma sensu i pokazuje tylko działanie tagów. Wszystko będzie zmienione, bo przecież nie będziemy robić AI na ifach...
-	//	
-	//		if (message_info == "CollisionStartWith" + GetName()) {
-	//			
-	//			std::cout << "I hit : " ;
-	//			//Sprawdzamy po tagach z czym uderzy� si� Pikaczu
-	//			
-	//			if (other->IsTagged("BigTree")) {
-	//				
-	//				std::cout << "big tree" << std::endl;
-
-	//			}
-
-	//			else if (other->IsTagged("SmallTree")) {	
-	//			
-	//				std::cout << "small tree" << std::endl;
-
-	//			}
-
-	//			else if (other->IsTagged("fence")) {
-	//				
-	//				std::cout << "fence" << std::endl;
-	//			
-	//			}
-
-	//			else if (other->IsTagged("squirtle")) {
-	//				
-	//				std::cout << "squirtle" << std::endl;
-	//			
-	//			}
-
-	//			else if (other->IsTagged("Pokemon")) {
-	//				
-	//				std::cout << "pokemon" << std::endl;
-	//			
-	//			}
-
-	//			else {
-	//				
-	//				std::cout << "I don't know what it is! " << std::endl;
-	//			
-	//			}
-	//			
-	//		}
-	//		
-	//	}
-	//	
 	}
 
 	if(message_info == "GoFront") {
@@ -237,7 +195,7 @@ void Pikachu::ReceiveMessage(Message* message) {
 
 	if(message_info == "GotoSquirtle") {
 
-		//gotosquirtle->Initialize("Squirtle", 0.2f);
+		_brain.GotoState("Going to Squirtle");
 
 	}
 
@@ -249,6 +207,13 @@ Pikachu::~Pikachu(void) {
 
 void Pikachu::Render() {
 
-	PhysicsActor::Render();
+	Sentient::Render();
+
+}
+
+void Pikachu::InitializeBrain() {
+		
+	GotoTargetState* gototargetstate = new GotoTargetState("Squirtle", 0.2f);
+	_brain.AddState("Going to Squirtle", gototargetstate);
 
 }

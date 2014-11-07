@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-class Pikachu : public PhysicsActor {
+class Pikachu : public Sentient {
 public:
 	Pikachu();
 	virtual ~Pikachu();
@@ -14,11 +14,14 @@ public:
 	b2Fixture* _leftSensor;
 	b2Fixture* _headSensor;
 	
-	GotoSquirtle* gotosquirtle;
+	void Update(float dt);
+	void Render();
+	void ReceiveMessage(Message* message);
 
-	virtual void Update(float dt);
-	virtual void Render();
-	virtual void ReceiveMessage(Message* message);
+	PathFinder&		GetPathfinder() {return _pathFinder;}
+	void OnNamedEvent( const String& /*eventId*/ ) {}
+
+	void InitializeBrain();
 
 };
 
