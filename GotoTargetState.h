@@ -4,9 +4,15 @@
 class GotoTargetState : public AIBrainState {
 
 public:
-	GotoTargetState(const String& targetTag, float moveSpeed);
+	GotoTargetState(const String& targetTag, float moveSpeed, AIBrain* brain);
 	~GotoTargetState(void);
-	void Initialize( AIBrain* brain ) {_brain = brain;}
+
+	void Initialize( AIBrain* brain ) {
+		std::cout << "mózg : " << brain << std::endl;
+		_brain = brain;
+		std::cout << "mózg : " << _brain << std::endl;
+		std::cout << "Imie : " << _brain->GetActor()->GetName() << std::endl;
+	}
 	void Update(float dt);
 	void BeginState( AIBrainState* previousState );
 	void EndState( AIBrainState* nextState );

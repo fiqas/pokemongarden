@@ -22,6 +22,8 @@ public:
 	void OnNamedEvent( const String& /*eventId*/ ) {}
 
 	void InitializeBrain();
+	void StartBrain();
 
+	AIBrain* Pikabrain;
 };
 

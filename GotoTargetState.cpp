@@ -2,10 +2,11 @@
 #include "GotoTargetState.h"
 
 
-GotoTargetState::GotoTargetState(const String& targetTag, float moveSpeed) {
+GotoTargetState::GotoTargetState(const String& targetTag, float moveSpeed, AIBrain* brain) {
 
 	_targetTag = targetTag;
 	_moveSpeed = moveSpeed;
+	_brain = brain;
 	gototargetaievent = new GotoTargetAIEvent();
 	RegisterEvent(gototargetaievent);
 

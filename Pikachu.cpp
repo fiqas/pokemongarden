@@ -24,7 +24,7 @@ Pikachu::Pikachu(void) {
 	theSwitchboard.SubscribeTo(this, "GoFront");
 	theSwitchboard.SubscribeTo(this, "GoBack");
 	theSwitchboard.SubscribeTo(this, "GotoSquirtle");
-
+	
 	//sensory kontaktu
 
 	b2PolygonShape sensorShape;
@@ -48,13 +48,15 @@ Pikachu::Pikachu(void) {
 	_leftSensor = GetBody()->CreateFixture(&sensorFixtureDef);
 	_leftSensor->SetUserData(this);
 
+	
+
 }
 
 
 void Pikachu::Update(float dt) {	
 
 	Sentient::Update(dt);
-
+	//theSwitchboard.Broadcast(new Message("GotoSquirtle"));
 	b2Vec2 currentVelocity = GetBody()->GetLinearVelocity();
 	float maxVel = theTuning.GetFloat("PikachuMaxSpeed");
 	float xVector = 0.0f; 
@@ -62,12 +64,8 @@ void Pikachu::Update(float dt) {
 	float impulseY = 0.0f;
 	float impulseX = 0.0f;
 
-	if(theInput.IsKeyDown(ANGEL_KEY_S)) {
-
-		std::cout << "wchodze w s" << std::endl;
-		theSwitchboard.Broadcast(new Message("GotoSquirtle"));
-
-	}
+	
+	
 
 	if(theInput.IsKeyDown(ANGEL_KEY_RIGHTARROW)) {
 
@@ -195,7 +193,8 @@ void Pikachu::ReceiveMessage(Message* message) {
 
 	if(message_info == "GotoSquirtle") {
 
-		_brain.GotoState("Going to Squirtle");
+		std::cout << "Goto" << std::endl;
+		//_brain.GotoState("Going to Squirtle");
 
 	}
 
@@ -212,8 +211,22 @@ void Pikachu::Render() {
 }
 
 void Pikachu::InitializeBrain() {
-		
-	GotoTargetState* gototargetstate = new GotoTargetState("Squirtle", 0.2f);
+
+	Pikabrain = &_brain;
+	std::cout << Pikabrain->GetActor()->GetName() << std::endl;
+	std::cout << _brain.GetActor()->GetName() << std::endl;
+	std::cout << "InitializeBrain()" << std::endl;	
+	GotoTargetState* gototargetstate = new GotoTargetState("red", 0.2f, Pikabrain);
 	_brain.AddState("Going to Squirtle", gototargetstate);
+	 //theSwitchboard.Broadcast(new Message("GotoSquirtle"));
+	 
+}
+
+void Pikachu::StartBrain() {
+
+	std::cout << "StartBrain()" << std::endl;
+	BoundingBox bounds(Vector2(-20, -20), Vector2(20, 20));
+	theSpatialGraph.CreateGraph(0.75f, bounds);
+	_brain.GotoState("Going to Squirtle");
 
 }
