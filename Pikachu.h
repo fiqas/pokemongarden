@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-class Pikachu : public Sentient {
+class Pikachu : public Actor {
 public:
 	Pikachu();
 	virtual ~Pikachu();
@@ -18,12 +18,5 @@ public:
 	void Render();
 	void ReceiveMessage(Message* message);
 
-	PathFinder&		GetPathfinder() {return _pathFinder;}
-	void OnNamedEvent( const String& /*eventId*/ ) {}
-
-	void InitializeBrain();
-	void StartBrain();
-
-	AIBrain* Pikabrain;
 };
 
