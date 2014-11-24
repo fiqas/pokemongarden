@@ -69,7 +69,7 @@ RightFence = {
 BigTreeSprite = {
 
 	class = "Actor",
-	layer = 3,
+	layer = 4,
 	position = {-9.0, 6.0},
 	sprite = "Resources/Images/objects/bigtree.png",
 	size = {7.0, 8.0},
@@ -77,3 +77,69 @@ BigTreeSprite = {
 	
 }
 
+KlodaSprite = {
+
+	class = "Actor",
+	layer = 4,
+	position = { 1.0, 2.0},
+	sprite = "Resources/Images/objects/kloda.png",
+	size = {1.0, 0.5},
+	name = "klodasprite",
+	
+}
+
+DrzewoIglaste2 = {
+
+	class = "Actor",
+	layer = 4,
+	position = { 1.0, 4.0},
+	sprite = "Resources/Images/objects/drzewoiglaste2.png",
+	size = {2.5, 3.0},
+	name = "drzewoiglastesprite",
+
+}
+
+Krzak = {
+
+	class = "Actor",
+	layer = 4,
+	position = { -1.0, 2.0},
+	sprite = "Resources/Images/objects/krzak.png",
+	size = {1.0, 1.0},
+	name = "krzaksprite",
+}
+
+Krzak2 = {
+
+	class = "Actor",
+	layer = 4,
+	position = { -1.0, 2.0},
+	sprite = "Resources/Images/objects/krzak2.png",
+	size = {1.5, 1.5},
+	name = "krzak2sprite",
+
+}
+
+DrzewoLisciaste = {
+
+	class = "Actor",
+	layer = 4,
+	position = {9.0, 6.0},
+	sprite = "Resources/Images/objects/drzewolisciaste.png",
+	size = {8.0, 8.0},
+	name = "drzewolisciastesprite",
+	
+
+}
+
+TreeWithLeavesHigh = {
+
+	class = "Actor",
+	layer = 4,
+	position = {6.5, -6.0},
+	sprite = "Resources/Images/objects/treewithleaveshigh.png",
+	size = {3.0, 5.0},
+	name = "drzewoprite",
+	
+
+}

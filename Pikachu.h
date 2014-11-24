@@ -1,29 +1,34 @@
 #pragma once
 #include "stdafx.h"
 
-class Pikachu : public Sentient {
+class Pikachu : public Actor {
 public:
 	Pikachu();
 	virtual ~Pikachu();
-
-	float GoUpDown(float yVector, b2Vec2 currentVelocity);
-	float GoLeftRight(float xVector, b2Vec2 currentVelocity);
-	
-	b2Fixture* _footSensor;
-	b2Fixture* _rightSensor;
-	b2Fixture* _leftSensor;
-	b2Fixture* _headSensor;
 	
 	void Update(float dt);
 	void Render();
 	void ReceiveMessage(Message* message);
 
-	PathFinder&		GetPathfinder() {return _pathFinder;}
-	void OnNamedEvent( const String& /*eventId*/ ) {}
+	Vector2List _pathPoints; 
+	unsigned int _pathIndex; 
+	void GetToNextPoint();
+	void GoTo(Vector2 newDestination);
 
-	void InitializeBrain();
-	void StartBrain();
+	double scalar;
+    double positionlength;
+    double destinationlength;
+    double cosinus;
+    double angle;
+	float time;
+	float distance;
+	double Angle(Vector2 position, Vector2 destination);
 
-	AIBrain* Pikabrain;
+	bool walkingright;
+	bool walkingleft;
+	bool walkingup;
+	bool walkingdown;
+
+
 };
 

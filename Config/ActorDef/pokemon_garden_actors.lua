@@ -69,7 +69,7 @@ RightFence = {
 BigTree = {
 
 	class = "PhysicsActor",
-	layer = 4,
+	layer = 3,
 	position = {-9.0, 6.0},
 	sprite = "Resources/Images/objects/bigtree.png",
 	size = {7.0, 8.0},

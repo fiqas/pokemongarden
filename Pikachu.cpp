@@ -6,16 +6,16 @@ Pikachu::Pikachu(void) {
 	//ustawienia pikachu
 
 	SetName("Pikachu");
+	SetPosition(0,0);
 	LoadSpriteFrames("Resources/Images/pikachu/pikachu_001.png", GL_CLAMP, GL_LINEAR);
-	SetSpriteFrame(0);
-	SetDensity(0.8f);
-	SetFriction(10.0f);
-	SetRestitution(0.7f);
-	SetFixedRotation(true);
-	SetShapeType(PhysicsActor::SHAPETYPE_BOX);
-	SetPosition(0.0f, 0.0f);
-	SetLayer(3);
-	InitPhysics();
+	SetSpriteFrame(2);
+	SetLayer(2);
+
+	walkingright = false;
+	walkingleft = false;
+	walkingup = false;
+	walkingdown = false;
+	_pathIndex = 0;
 
 	//reaguje na dane komunikaty
 
@@ -23,210 +23,193 @@ Pikachu::Pikachu(void) {
 	theSwitchboard.SubscribeTo(this, "GoRight");
 	theSwitchboard.SubscribeTo(this, "GoFront");
 	theSwitchboard.SubscribeTo(this, "GoBack");
-	theSwitchboard.SubscribeTo(this, "GotoSquirtle");
+	theSwitchboard.SubscribeTo(this, "PathPointReached");
+	theSwitchboard.SubscribeTo(this, "MouseDown");
+
+}
+
+void Pikachu::GoTo(Vector2 newDestination) { 
+
+	Vector2List pathTest;
+
+	theSpatialGraph.GetPath(GetPosition(), newDestination, pathTest);
 	
-	//sensory kontaktu
+	if (pathTest.size() > 0) {
 
-	b2PolygonShape sensorShape;
-	b2FixtureDef sensorFixtureDef;
-	sensorFixtureDef.isSensor = true;
-	sensorFixtureDef.shape = &sensorShape;
+		_pathPoints = pathTest;
+		_pathIndex = 0;
+		GetToNextPoint();
 
-	sensorShape.SetAsBox(0.5f, 0.5f, b2Vec2(0.0f, -(GetSize().Y * 0.5f)), 0.0f);
-	_footSensor = GetBody()->CreateFixture(&sensorFixtureDef);
-	_footSensor->SetUserData(this);
+	}
+}
 
-	sensorShape.SetAsBox(0.5f, 0.5f, b2Vec2(0.0f, (GetSize().Y * 0.5f)), 0.0f); 
-	_headSensor = GetBody()->CreateFixture(&sensorFixtureDef);
-	_headSensor->SetUserData(this);
+void Pikachu::GetToNextPoint() { 
 
-	sensorShape.SetAsBox(0.5f, 0.5f, b2Vec2((GetSize().X * 0.5f), 0.0f), 0.0f); 
-	_rightSensor = GetBody()->CreateFixture(&sensorFixtureDef);
-	_rightSensor->SetUserData(this);
+	Vector2 next = _pathPoints[++_pathIndex];
+	distance = Vector2::Distance(_position, next);
+	time = distance / 4.0f;
+	angle = Angle(new Vector(10, 0), next);
 
-	sensorShape.SetAsBox(0.5f, 0.5f, b2Vec2(-(GetSize().X * 0.5f), 0.0f), 0.0f); 
-	_leftSensor = GetBody()->CreateFixture(&sensorFixtureDef);
-	_leftSensor->SetUserData(this);
+	std::cout << "next " << next.X << " " << next.Y << std::endl;
+	std::cout << angle << std::endl;
 
+	if (angle >= 315 && angle < 45) {
+
+		theSwitchboard.Broadcast(new Message("GoingRight"));
+	}
+
+	else if (angle >= 45 && angle < 135) {
+
+		theSwitchboard.Broadcast(new Message("GoingUp"));
+
+	}
+
+	else if (angle >= 135 && angle < 225) {
+
+		theSwitchboard.Broadcast(new Message("GoingLeft"));
+
+	}
+
+	else if (angle >= 225 && angle < 315) {
+
+		theSwitchboard.Broadcast(new Message("GoingDown"));
+
+	}
+
+	else {
+
+		theSwitchboard.Broadcast(new Message("Standing"));
+
+	}
+
+	MoveTo(next, time, false, "PathPointReached");
+
+}
+
+double Pikachu::Angle(Vector2 position, Vector2 destination) {
+
+	scalar = position.X * destination.X + position.Y * destination.Y;
+    positionlength = sqrt(pow(position.X, 2) + pow(position.Y, 2));
+    destinationlength = sqrt(pow(destination.X, 2) + pow(destination.Y, 2));
+    cosinus = scalar / (positionlength * destinationlength);
 	
+	return acos(cosinus) * 180 / M_PI;
 
 }
 
 
 void Pikachu::Update(float dt) {	
 
-	Sentient::Update(dt);
-	//theSwitchboard.Broadcast(new Message("GotoSquirtle"));
-	b2Vec2 currentVelocity = GetBody()->GetLinearVelocity();
-	float maxVel = theTuning.GetFloat("PikachuMaxSpeed");
-	float xVector = 0.0f; 
-	float yVector = 0.0f;
-	float impulseY = 0.0f;
-	float impulseX = 0.0f;
-
-	
-	
-
-	if(theInput.IsKeyDown(ANGEL_KEY_RIGHTARROW)) {
-
-		theSwitchboard.Broadcast(new Message("GoRight"));
-		xVector = 2.0f;
-
-	}
-
-	else if(theInput.IsKeyDown(ANGEL_KEY_LEFTARROW)) {
-
-		theSwitchboard.Broadcast(new Message("GoLeft"));
-		xVector = -2.0f;
-
-	}
-
-	else if(theInput.IsKeyDown(ANGEL_KEY_UPARROW)) {
-
-		theSwitchboard.Broadcast(new Message("GoFront"));
-		yVector = 2.0f;
-
-	}
-
-	else if(theInput.IsKeyDown(ANGEL_KEY_DOWNARROW)) {
-
-		theSwitchboard.Broadcast(new Message("GoBack"));
-		yVector = -2.0f;
-
-	}
-
-	else {
-		
-	theSwitchboard.Broadcast(new Message("NotMoving"));
-
-	}
-
-	impulseY = GoUpDown(yVector, currentVelocity);
-	impulseX = GoLeftRight(xVector, currentVelocity);
-
-	ApplyLinearImpulse(Vector2(impulseX, 0), Vector2());
-	ApplyLinearImpulse(Vector2(0, impulseY), Vector2());
+	Actor::Update(dt);
 
 }
-
-float Pikachu::GoUpDown(float yVector, b2Vec2 currentVelocity) {
-
-	float maxVel = theTuning.GetFloat("PikachuMaxSpeed"); 
-	float desiredVelocityY = yVector * maxVel;	
-	float velocityChangeY = desiredVelocityY - currentVelocity.y;
-	float impulseY = GetBody()->GetMass() * velocityChangeY;
-
-	return impulseY;
-
-}
-
-float Pikachu::GoLeftRight(float xVector, b2Vec2 currentVelocity) {
-
-	float maxVel = theTuning.GetFloat("PikachuMaxSpeed"); 
-	float desiredVelocity = xVector * maxVel;	
-	float velocityChangeX = desiredVelocity - currentVelocity.x;
-	float impulseX = GetBody()->GetMass() * velocityChangeX;
-
-	return impulseX;
-
-}
-
 
 void Pikachu::ReceiveMessage(Message* message) {
 
-	String message_info = message->GetMessageName();
-	
-	//Kolizje
+	if ( (message->GetMessageName() == "PathPointReached") && (message->GetSender() == this) ) { 
 
-	if ( message_info == "CollisionStartWith" + GetName() || message_info == "CollisionEndWith" + GetName()){
-		
-		TypedMessage<b2Contact*>* contactMessage = (TypedMessage<b2Contact*>*)message;
-		b2Contact* contact = contactMessage->GetValue();
-		PhysicsActor* other = NULL; // co� z czym si� zderzamy
-		b2Fixture* fixture = NULL;
+		if (_pathIndex < _pathPoints.size() - 1) {
 
-		if (contact->GetFixtureA()->GetUserData() == this) {
-			
-			other = (PhysicsActor*)contact->GetFixtureB()->GetBody()->GetUserData();
-			fixture = contact->GetFixtureA();
-		
+			GetToNextPoint();
+
 		}
-		
+
 		else {
-			
-			other = (PhysicsActor*)contact->GetFixtureA()->GetBody()->GetUserData();
-			fixture = contact->GetFixtureB();
-		
-		}
-		
-		if (other == NULL) {
 
-			return;
-	
+			theSwitchboard.Broadcast(new Message("EndPointReached", this));
+			_pathPoints.clear();
+			_pathIndex = 0;
+
 		}
 
 	}
 
-	if(message_info == "GoFront") {
+	else if (message->GetMessageName() == "EndPointReached") {
 
-		PlaySpriteAnimation(0.1f, SAT_OneShot, 4, 6, "WalkingFront");
+			if (walkingright) {
 
-	}
+				SetSpriteFrame(13);
 
-	if(message_info == "GoBack") {
+			}
 
-		PlaySpriteAnimation(0.1f, SAT_OneShot, 0, 3, "WalkingBack");
+			else if (walkingleft) {
 
-	}
+				SetSpriteFrame(9);
 
-	if(message_info == "GoLeft") {
+			}
 
-		PlaySpriteAnimation(0.1f, SAT_OneShot, 8, 11, "WalkingLeft");
+			else if (walkingup) {
 
-	}
+				SetSpriteFrame(5);
 
-	if(message_info == "GoRight") {
+			}
 
-		PlaySpriteAnimation(0.1f, SAT_OneShot, 12, 15, "WalkingRight");
+			else {
 
-	}
+				SetSpriteFrame(1);
 
-	if(message_info == "GotoSquirtle") {
-
-		std::cout << "Goto" << std::endl;
-		//_brain.GotoState("Going to Squirtle");
+			}
 
 	}
 
-}
 
-Pikachu::~Pikachu(void) {
+	else if (message->GetMessageName() == "MouseDown") { 
+
+		TypedMessage<Vec2i> *m = (TypedMessage<Vec2i>*)message;
+		Vec2i screenCoordinates = m->GetValue();
+		Vector2 worldCoordinates = MathUtil::ScreenToWorld(screenCoordinates);
+		GoTo(worldCoordinates);
+
+	}
+
+	else if (message->GetMessageName() == "GoingRight") {
+
+		walkingright = true;
+		walkingleft = false;
+		walkingup = false;
+		walkingdown = false;
+		PlaySpriteAnimation(time, SAT_PingPong, 12, 15, "WalkingRight");
+
+	}
+
+	else if (message->GetMessageName() == "GoingUp") {
+
+		walkingright = false;
+		walkingleft = false;
+		walkingup = true;
+		walkingdown = false;
+		PlaySpriteAnimation(time, SAT_PingPong, 4, 6, "WalkingFront");
+
+	}
+
+	else if (message->GetMessageName() == "GoingLeft") {
+
+		walkingright = false;
+		walkingleft = true;
+		walkingup = false;
+		walkingdown = false;
+		PlaySpriteAnimation(time, SAT_PingPong, 8, 11, "WalkingLeft");
+
+	}
+
+	else if (message->GetMessageName() == "GoingDown") {
+
+		walkingright = false;
+		walkingleft = false;
+		walkingup = false;
+		walkingdown = true;
+		PlaySpriteAnimation(time, SAT_PingPong, 0, 3, "WalkingBack");
+
+	}
 
 }
 
 void Pikachu::Render() {
 
-	Sentient::Render();
+	Actor::Render();
 
 }
 
-void Pikachu::InitializeBrain() {
-
-	Pikabrain = &_brain;
-	std::cout << Pikabrain->GetActor()->GetName() << std::endl;
-	std::cout << _brain.GetActor()->GetName() << std::endl;
-	std::cout << "InitializeBrain()" << std::endl;	
-	GotoTargetState* gototargetstate = new GotoTargetState("red", 0.2f, Pikabrain);
-	_brain.AddState("Going to Squirtle", gototargetstate);
-	 //theSwitchboard.Broadcast(new Message("GotoSquirtle"));
-	 
-}
-
-void Pikachu::StartBrain() {
-
-	std::cout << "StartBrain()" << std::endl;
-	BoundingBox bounds(Vector2(-20, -20), Vector2(20, 20));
-	theSpatialGraph.CreateGraph(0.75f, bounds);
-	_brain.GotoState("Going to Squirtle");
+Pikachu::~Pikachu(void) {
 
 }
