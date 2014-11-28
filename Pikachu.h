@@ -10,6 +10,7 @@ public:
 	void Render();
 	void ReceiveMessage(Message* message);
 
+<<<<<<< HEAD
 	Vector2List _pathPoints; 
 	unsigned int _pathIndex; 
 	void GetToNextPoint();
@@ -30,5 +31,7 @@ public:
 	bool walkingdown;
 
 
+=======
+>>>>>>> origin/master
 };
 
