@@ -12,6 +12,8 @@ struct Vector {
 int main() {
 
     Vector position;
+    double angle;
+
     std::cin >> position.x;
     std::cin >> position.y;
     std::cout << "position: " << position.x << " " << position.y << std::endl;
@@ -25,7 +27,10 @@ int main() {
     double positionlength = sqrt(pow(position.x, 2) + pow(position.y, 2));
     double destinationlength = sqrt(pow(destination.x, 2) + pow(destination.y, 2));
     double cosinus = scalar / (positionlength * destinationlength);
-    double angle = acos(cosinus) * 180 / M_PI;
+
+
+	if ( destination.y < 0)  angle = 360 - acos(cosinus) * 180 / M_PI;
+    else angle = acos(cosinus) * 180 / M_PI;
 
     std::cout << "scalar: " << scalar << std::endl;
     std::cout << "positionlength: " << positionlength << std::endl;

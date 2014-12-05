@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Pikachu.h"
 
+
 Pikachu::Pikachu(void) {
 
 	//ustawienia pikachu
@@ -10,108 +11,105 @@ Pikachu::Pikachu(void) {
 	LoadSpriteFrames("Resources/Images/pikachu/pikachu_001.png", GL_CLAMP, GL_LINEAR);
 	SetSpriteFrame(2);
 	SetLayer(2);
-<<<<<<< HEAD
 
 	walkingright = false;
 	walkingleft = false;
 	walkingup = false;
 	walkingdown = false;
 	_pathIndex = 0;
-=======
->>>>>>> origin/master
 
 	//reaguje na dane komunikaty
 
-	theSwitchboard.SubscribeTo(this, "GoLeft");
-	theSwitchboard.SubscribeTo(this, "GoRight");
-	theSwitchboard.SubscribeTo(this, "GoFront");
-	theSwitchboard.SubscribeTo(this, "GoBack");
-<<<<<<< HEAD
-	theSwitchboard.SubscribeTo(this, "PathPointReached");
-	theSwitchboard.SubscribeTo(this, "MouseDown");
+	theSwitchboard.SubscribeTo(this, "GoingLeft");
+	theSwitchboard.SubscribeTo(this, "GoingRight");
+	theSwitchboard.SubscribeTo(this, "GoingUp");
+	theSwitchboard.SubscribeTo(this, "GoingDown");
+	theSwitchboard.SubscribeTo(this, "PathPointReached");  //Osi¹gniêcie wierzcho³ka grafu
+	theSwitchboard.SubscribeTo(this, "EndPointReached");   //Zakoñczenie wyznaczonej œcie¿ki
+	theSwitchboard.SubscribeTo(this, "MouseDown");		   //Naciœniêcie przycisku myszy 	
 
 }
 
 void Pikachu::GoTo(Vector2 newDestination) { 
+
+	//Funkcja tworz¹ca œcie¿kê
 
 	Vector2List pathTest;
 
 	theSpatialGraph.GetPath(GetPosition(), newDestination, pathTest);
 	
 	if (pathTest.size() > 0) {
-=======
->>>>>>> origin/master
 
 		_pathPoints = pathTest;
 		_pathIndex = 0;
 		GetToNextPoint();
 
 	}
+
 }
 
-<<<<<<< HEAD
 void Pikachu::GetToNextPoint() { 
+
+	//Ta funkcja jest odpowiedzialna za puszczanie odpowiedniej animacji, 
+	//przenoszenie Pikachu z jednego wierzcho³ka do drugiego.
 
 	Vector2 next = _pathPoints[++_pathIndex];
 	distance = Vector2::Distance(_position, next);
 	time = distance / 4.0f;
-	angle = Angle(new Vector(10, 0), next);
-=======
-	Actor::Update(dt);
->>>>>>> origin/master
+	angle = Angle(Vector2(GetPosition().X,GetPosition().Y), next);
 
-	std::cout << "next " << next.X << " " << next.Y << std::endl;
 	std::cout << angle << std::endl;
+	
 
-<<<<<<< HEAD
-	if (angle >= 315 && angle < 45) {
-=======
-		theSwitchboard.Broadcast(new Message("GoRight"));
->>>>>>> origin/master
+	//Opracowanie w któr¹ stronê Pikachu wykona ruch.
 
+	if (GetPosition().X < next.X) {
+		
+		std::cout << " Right " << std::endl;
 		theSwitchboard.Broadcast(new Message("GoingRight"));
+
+		if (angle >= 315 && angle < 360 || angle >= 0 && angle < 45) {
+
+			std::cout << " Right " << std::endl;
+			theSwitchboard.Broadcast(new Message("GoingRight"));
+
+		}
+
 	}
 
 	else if (angle >= 45 && angle < 135) {
 
-<<<<<<< HEAD
+		std::cout << " Up "<< std::endl;
 		theSwitchboard.Broadcast(new Message("GoingUp"));
-=======
-		theSwitchboard.Broadcast(new Message("GoLeft"));
->>>>>>> origin/master
 
 	}
 
-	else if (angle >= 135 && angle < 225) {
+	else if (GetPosition().X > next.X) {
 
-<<<<<<< HEAD
+		std::cout << " Left "<< std::endl;
 		theSwitchboard.Broadcast(new Message("GoingLeft"));
-=======
-		theSwitchboard.Broadcast(new Message("GoFront"));
->>>>>>> origin/master
+	
+		if (angle >= 135 && angle < 225) {
 
+			std::cout << " Left "<< std::endl;
+			theSwitchboard.Broadcast(new Message("GoingLeft"));
+
+		}
+	
 	}
 
 	else if (angle >= 225 && angle < 315) {
 
-<<<<<<< HEAD
+		std::cout << " Down "<< std::endl;
 		theSwitchboard.Broadcast(new Message("GoingDown"));
-=======
-		theSwitchboard.Broadcast(new Message("GoBack"));
->>>>>>> origin/master
 
 	}
-
+	
 	else {
-<<<<<<< HEAD
-=======
-		
-		theSwitchboard.Broadcast(new Message("NotMoving"));
->>>>>>> origin/master
 
+		std::cout << " stoi "<< std::endl;
 		theSwitchboard.Broadcast(new Message("Standing"));
 
-<<<<<<< HEAD
 	}
 
 	MoveTo(next, time, false, "PathPointReached");
@@ -120,12 +118,18 @@ void Pikachu::GetToNextPoint() {
 
 double Pikachu::Angle(Vector2 position, Vector2 destination) {
 
+	//Funkcja obliczaj¹ca k¹t miêdzy dwoma wektorami - jednym który zawiera punkt przechodz¹cy przez obecn¹ poz. Pikachu
+	//oraz drugi zawieraj¹cy wierzcho³ek docelowy.
+
 	scalar = position.X * destination.X + position.Y * destination.Y;
     positionlength = sqrt(pow(position.X, 2) + pow(position.Y, 2));
     destinationlength = sqrt(pow(destination.X, 2) + pow(destination.Y, 2));
     cosinus = scalar / (positionlength * destinationlength);
+
+	if ( destination.Y < position.Y)  angle = 360 - acos(cosinus) * 180 / M_PI;
+    else angle = acos(cosinus) * 180 / M_PI;
 	
-	return acos(cosinus) * 180 / M_PI;
+	return angle;
 
 }
 
@@ -140,13 +144,19 @@ void Pikachu::ReceiveMessage(Message* message) {
 
 	if ( (message->GetMessageName() == "PathPointReached") && (message->GetSender() == this) ) { 
 
+		//Zosta³a odebrana wiadomoœæ o dotarciu do wierzcho³ka grafu, ktory jest zawarty w naszej œcie¿ce.
+		
 		if (_pathIndex < _pathPoints.size() - 1) {
+
+			//Przechodzenie do kolejnych punktów
 
 			GetToNextPoint();
 
 		}
 
 		else {
+
+			//Kiedy przeszliœmy przez wszystkie wierzcho³ki na naszej œcie¿ce.
 
 			theSwitchboard.Broadcast(new Message("EndPointReached", this));
 			_pathPoints.clear();
@@ -155,66 +165,39 @@ void Pikachu::ReceiveMessage(Message* message) {
 		}
 
 	}
-=======
-}
-
-void Pikachu::ReceiveMessage(Message* message) {
-
-	String message_info = message->GetMessageName();
-	Vector2 current_position = GetPosition();
->>>>>>> origin/master
 
 	else if (message->GetMessageName() == "EndPointReached") {
 
-<<<<<<< HEAD
-			if (walkingright) {
-=======
-		current_position.Y = current_position.Y + 1.0f;
-		PlaySpriteAnimation(0.1f, SAT_OneShot, 4, 6, "WalkingFront");
-		MoveTo(current_position, 0.3f, false, "WentFront");
->>>>>>> origin/master
+			//Kiedy dotrzemy do celu warto by³oby zastopowaæ animacjê, w tym celu ustawiona zostaje odpowiednia klatka
+			//w zale¿noœci od kierunku poruszania siê postaci.
 
-				SetSpriteFrame(13);
+			if (walkingright) {
+
+				PlaySpriteAnimation(0.1f, SAT_Loop, 13, 13);						
 
 			}
 
-<<<<<<< HEAD
 			else if (walkingleft) {
-=======
-		current_position.Y = current_position.Y - 1.0f;
-		PlaySpriteAnimation(0.1f, SAT_OneShot, 0, 3, "WalkingBack");
-		MoveTo(current_position, 0.3f, false, "WentBack");
->>>>>>> origin/master
 
-				SetSpriteFrame(9);
-
+				PlaySpriteAnimation(0.1f, SAT_Loop, 9, 9);
+				
 			}
 
 			else if (walkingup) {
-
-<<<<<<< HEAD
-				SetSpriteFrame(5);
+				
+				PlaySpriteAnimation(0.1f, SAT_Loop, 5, 5);
 
 			}
 
 			else {
 
-				SetSpriteFrame(1);
+				PlaySpriteAnimation(0.1f, SAT_Loop, 1, 1);
 
 			}
-=======
-
-	if(message_info == "GoLeft") {
-
-		current_position.X = current_position.X - 1.0f;
-		PlaySpriteAnimation(0.1f, SAT_OneShot, 8, 11, "WalkingLeft");
-		MoveTo(current_position, 0.3f, false, "WentLeft");
->>>>>>> origin/master
 
 	}
 
 
-<<<<<<< HEAD
 	else if (message->GetMessageName() == "MouseDown") { 
 
 		TypedMessage<Vec2i> *m = (TypedMessage<Vec2i>*)message;
@@ -223,6 +206,9 @@ void Pikachu::ReceiveMessage(Message* message) {
 		GoTo(worldCoordinates);
 
 	}
+
+	// Poni¿sze funkcje ustawiaj¹ wartoœci true/false dotycz¹ce kierunku poruszania siê postaci
+	// a tak¿e graj¹ odpowiedni¹ animacjê.
 
 	else if (message->GetMessageName() == "GoingRight") {
 
@@ -241,20 +227,11 @@ void Pikachu::ReceiveMessage(Message* message) {
 		walkingup = true;
 		walkingdown = false;
 		PlaySpriteAnimation(time, SAT_PingPong, 4, 6, "WalkingFront");
-=======
-		current_position.X = current_position.X + 1.0f;
-		PlaySpriteAnimation(0.1f, SAT_OneShot, 12, 15, "WalkingRight");
-		MoveTo(current_position, 0.3f, false, "WentRight");
-
-	}
-
->>>>>>> origin/master
 
 	}
 
 	else if (message->GetMessageName() == "GoingLeft") {
 
-<<<<<<< HEAD
 		walkingright = false;
 		walkingleft = true;
 		walkingup = false;
@@ -283,12 +260,6 @@ void Pikachu::Render() {
 
 Pikachu::~Pikachu(void) {
 
-=======
-	Actor::Render();
-
 }
 
-Pikachu::~Pikachu(void) {
-
->>>>>>> origin/master
-}
+// Gatunki pokemonów, koordynaty i teksty.

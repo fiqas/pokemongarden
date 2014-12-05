@@ -1,10 +1,11 @@
 #pragma once
 #include "stdafx.h"
 
-class Pokemon : public PhysicsActor
+class Pokemon : public Actor
 {
 public:
-	Pokemon(float x, float y, float sizex, float sizey, String pathName, String name, String colortag, String nametag, String typetag, String actiontag);
+
+	Pokemon(float x, float y, float sizex, float sizey, String pathName);
 	~Pokemon(void);
 
 };
