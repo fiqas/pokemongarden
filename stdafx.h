@@ -3,14 +3,13 @@
 // are changed infrequently
 //
 
-
+#define M_PI        3.14159265358979323846
 #include "Angel.h"
 #include "GardenManager.h"
 #include "Pikachu.h"
 #include "Pokemon.h"
 #include "Object.h"
 #include "CollisionManager.h"
-#include "GotoTargetState.h"
 
 
 // TODO: reference additional headers your program requires here

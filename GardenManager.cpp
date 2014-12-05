@@ -36,32 +36,33 @@ void GardenManager::CreatePokemon(float x, float y , float sizex, float sizey, S
 
 }
 
-void GardenManager::CreateCollisionManager(float x, float y ,  float sx, float sy, String name, String colortag, String nametag, String typetag, String actiontag, Vector2 opposite, Vector2 behind, Vector2 side) {
+void GardenManager::CreateCollisionManager(float x, float y ,  float sx, float sy, String name, String colortag, String nametag, String typetag, Vector2 opposite, Vector2 behind, Vector2 side) {
 
-	theWorld.Add(new CollisionManager(x, y , sx, sy, name,colortag, nametag, typetag, actiontag, behind, opposite, side));
+	theWorld.Add(new CollisionManager(x, y , sx, sy, name,colortag, nametag, typetag, behind, opposite, side));
 
 }
 
 void GardenManager::AddCollisionManager() {
 
-	CreateCollisionManager(-9.0f, 3.8f, 1.0f, 0.7f, "BigTree", "green", "big tree", "tree", "spawned", Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(6.5f, -8.0f, 0.3f, 0.7f, "BigTreeHighWithLeaves", "green", "big tree", "tree", "spawned", Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(8.8f, 3.0f, 0.5f, 1.0f, "BigTreeWithLeaves", "green", "big tree", "tree", "spawned", Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(1.0f, 3.0f, 0.5f, 0.5f, "TreeNeadles", "green", "notSoBig", "tree", "spawned", Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(-11.0f, -7.5f, 1.0f, 0.1f, "Jigglypuff", "pink", "Jigglypuff", "thing", "spawned", Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(3.0f, 7.5f, 1.0f, 0.1f,  "Victreebel", "yellow", "Victreebel", "flower", "spawned" , Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(3.0f, 4.8f, 1.5f, 0.1f, "Arbok", "purple", "Arbok", "snake", "spawned" , Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(4.0f, -4.5f, 1.0f, 0.1f, "Bulbasaur", "green", "Bulbasaur", "plant", "spawned" , Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(-4.0f, 7.3f, 1.0f, 0.1f,  "Psyduck", "yellow", "Psyduck", "duck", "spawned", Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(-3.0f, -0.5f, 1.0f, 0.1f,  "Rattata", "purple", "Rattata", "rat", "spawned" , Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(11.0f, -5.5f, 1.0f, 0.1f, "Slowpoke", "pink", "Slowpoke", "lazy asshole", "spawned" , Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(5.0f, 8.5f, 1.0f, 0.1f, "Koffing", "purple", "Koffing", "ball", "spawned" , Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(6.0f, -0.9f, 1.0f, 0.1f, "Snorlax", "blue-white", "Snorlax", "sleepyhead", "spawned", Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(-10.0f, -1.5f, 1.0f, 0.1f, "Charizard", "red", "Charizard", "dragon", "spawned" , Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(9.0f, -1.5f, 1.0f, 0.1f, "Squirtle", "blue", "Squirtle", "turtle", "spawned", Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(5.0f, 7.0f, 1.0f, 0.1f,  "Meowth", "white", "Meowth", "cat", "spawned", Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(6.0f, 2.5f, 1.0f, 0.1f, "Pidgeot", "orange", "Pidgeot", "bird", "spawned", Vector2(0,0), Vector2(0,0), Vector2(0,0));
-	CreateCollisionManager(-5.0f, -5.7f, 1.0f, 0.1f, "Raichu", "yellow", "Raichu", "mouse", "spawned", Vector2(0,0), Vector2(0,0), Vector2(0,0));
+	//Set tag name!
+	CreateCollisionManager(-9.0f, 3.8f, 1.0f, 0.7f, "BigTree", "green", "big tree", "tree", Vector2(-9.2f, 2.63f), Vector2(-8.0f, 5.9f), Vector2(-7.0f, 3.8f));
+	CreateCollisionManager(6.5f, -8.0f, 0.3f, 0.7f, "BigTreeHighWithLeaves", "green", "big tree", "tree", Vector2(6.3f, -9.0f), Vector2(6.34f, -7.16f), Vector2(4.99f, -8.0f));
+	CreateCollisionManager(8.8f, 3.0f, 0.5f, 1.0f, "BigTreeWithLeaves", "green", "big tree", "tree", Vector2(8.77f, 1.49f), Vector2(8.85f, 4.11f), Vector2(7.58f , 3.25f));
+	CreateCollisionManager(1.0f, 3.0f, 0.5f, 0.5f, "TreeNeadles", "green", "notSoBig", "tree", Vector2(1.75f, 2.28f), Vector2(0.99f, 3.98f), Vector2(0.4f, 3.5f));
+	CreateCollisionManager(-11.0f, -7.5f, 1.0f, 0.1f, "Jigglypuff", "pink", "normal", "thing",  Vector2(-10.93f, -8.19f), Vector2(-10.87f, -6.92f), Vector2(-11.98f, -7.11f));
+	CreateCollisionManager(3.0f, 7.5f, 1.0f, 0.1f,  "Victreebel", "yellow", "grass", "flower", Vector2(3.29f, 7.48f), Vector2(2.78f, 8.46f), Vector2(1.61f, 7.86f ));
+	CreateCollisionManager(3.0f, 4.8f, 1.5f, 0.1f, "Arbok", "purple", "poison", "snake",  Vector2(3.13f, 4.06f), Vector2(3.21f, 6.0f), Vector2(1.43f, 5.49f));
+	CreateCollisionManager(4.0f, -4.5f, 1.0f, 0.1f, "Bulbasaur", "green", "grass", "plant", Vector2(3.85f, -5.16f), Vector2( 3.77f, -3.81f), Vector2(2.86f ,-4.35f));
+	CreateCollisionManager(-4.0f, 7.3f, 1.0f, 0.1f,  "Psyduck", "yellow", "water", "duck", Vector2(-4.12f, 6.84f), Vector2(-4.02f,8.12f), Vector2(-5.23, 7.81f));
+	CreateCollisionManager(-3.0f, -0.5f, 1.0f, 0.1f,  "Rattata", "purple", "normal", "rat", Vector2(-3.29f, -1.22f), Vector2(-2.96f, 0.14f), Vector2(-4.10f, -0.33f));
+	CreateCollisionManager(11.0f, -5.5f, 1.0f, 0.1f, "Slowpoke", "pink", "psychic", "lazy asshole", Vector2(10.82f, -6.19f), Vector2(11.03f, -4.84f), Vector2( 9.2f, -5.22f));
+	CreateCollisionManager(5.0f, 8.5f, 1.0f, 0.1f, "Koffing", "purple", "poison", "ball", Vector2(5.04f, 8.0f), Vector2( 5.1f, 10.19f), Vector2(3.91f, 8.97f));
+	CreateCollisionManager(6.0f, -0.9f, 1.0f, 0.1f, "Snorlax", "blue-white", "normal", "sleepyhead",  Vector2(5.88f, -1.28f), Vector2(6.04f, -0.12f), Vector2( 4.58f, -0.41f));
+	CreateCollisionManager(-10.0f, -1.5f, 1.0f, 0.1f, "Charizard", "red", "fire", "dragon", Vector2(-10.0f , -1.92f), Vector2(-9.63f, 0.66f), Vector2(-8.31f, -1.28f));
+	CreateCollisionManager(9.0f, -1.5f, 1.0f, 0.1f, "Squirtle", "blue", "water", "turtle",  Vector2(8.87f, -2.38f), Vector2(8.93, -0.6f), Vector2(7.8f, 1.22f));
+	CreateCollisionManager(-0.5f, 7.0f, 1.0f, 0.1f,  "Meowth", "white", "normal", "cat",  Vector2(-0.48f, 5.97f), Vector2( -0.51f, 7.7f), Vector2(-1.53f, 7.19f));
+	CreateCollisionManager(6.0f, 2.5f, 1.0f, 0.1f, "Pidgeot", "orange", "flying", "bird",  Vector2(6.04f, 1.82f), Vector2(6.09f, 3.27f), Vector2(4.85f, 2.82f));
+	CreateCollisionManager(-5.0f, -5.7f, 1.0f, 0.1f, "Raichu", "yellow", "electric", "mouse", Vector2(-4.96f, -6.46f), Vector2(-4.8f, -4.62f), Vector2(-6.12f, -5.08f));
 
 }
 
@@ -78,7 +79,7 @@ void GardenManager::AddPokemons() {
 	CreatePokemon(6.0f, 0.0f, 1.8f, 2.0f, "Resources/Images/pokemons/snorlax.png");
 	CreatePokemon(-10.0f, 0.0f, 3.2f, 3.3f, "Resources/Images/pokemons/charizard_001.png");
 	CreatePokemon(9.0f, -1.0f, 1.2f, 1.3f, "Resources/Images/pokemons/squirtle_001.png");
-	CreatePokemon(5.0f, 7.5f, 1.4f, 1.5f, "Resources/Images/pokemons/meowth_001.png");
+	CreatePokemon(-0.5f, 7.5f, 1.4f, 1.5f, "Resources/Images/pokemons/meowth_001.png");
 	CreatePokemon(6.0f, 3.0f, 1.0f, 1.5f, "Resources/Images/pokemons/pidgeot_001.png");
 	CreatePokemon(-5.0f, -5.0f, 1.8f, 1.6f, "Resources/Images/pokemons/raichu_001.png");
 

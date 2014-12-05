@@ -205,6 +205,8 @@ void Pikachu::ReceiveMessage(Message* message) {
 		Vector2 worldCoordinates = MathUtil::ScreenToWorld(screenCoordinates);
 		GoTo(worldCoordinates);
 
+		std::cout << "Pozycja : " << worldCoordinates.X << " " << worldCoordinates.Y  << std::endl;
+	
 	}
 
 	// Poni¿sze funkcje ustawiaj¹ wartoœci true/false dotycz¹ce kierunku poruszania siê postaci
