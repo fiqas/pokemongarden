@@ -9,8 +9,8 @@ public:
 
 	~CollisionManager(void);
 
-	Vector2 SideLeftOrRight;
-	Vector2 SideBack;
-	Vector2 SideOpposite;
+	Vector2 _side;
+	Vector2 _behind;
+	Vector2 _front;
 };
 

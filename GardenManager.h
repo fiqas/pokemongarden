@@ -15,10 +15,17 @@ public:
 	void AddCollisionManager();
 	void AddPokemons();
 	void Update(float dt);
+	void ReceiveMessage(Message* message);
+	void Text(String display_text);
+
+	void Analyze();
 	
 	virtual void MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button);
 
 
 	Pikachu* pikachu;
+	FullScreenActor* text_screen;
+	TextActor* text;
+	bool close_text_frame;
 };
 

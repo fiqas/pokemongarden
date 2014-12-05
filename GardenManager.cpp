@@ -5,7 +5,10 @@ GardenManager::GardenManager(void) {
 	theWorld.SetupPhysics(Vector2(0.0f, 0.0f));		// Ustawienie fizyki, potrzebne by Pikachu 
 	theWorld.LoadLevel("pokemon_garden_level");	    // Wczytujemy plik ze statycznymi elementami œwiata tj. drzewa, p³ot oraz ziemia.
 	
-	Pikachu* pikachu = new Pikachu();
+	pikachu = new Pikachu();
+	text = new TextActor("Console", "", TXT_Left);
+	text_screen = new FullScreenActor();
+	close_text_frame = false;
 	
 	AddPokemons();									//Funkcje dodaj¹ce odpowiednio kolzje do Pokemonów, managerów kolizji
 	AddCollisionManager();
@@ -17,12 +20,132 @@ GardenManager::GardenManager(void) {
 	theSpatialGraph.CreateGraph( 1.0f, bounds);
 	theSpatialGraph.EnableDrawGraph(false);
 
+	//Pikachu reaguje na nastêpuj¹ce "wiadomoœci":
+	theSwitchboard.SubscribeTo(this, "GoTo");
+
 }
 
 void GardenManager::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
 	
-	TypedMessage<Vec2i> *m = new TypedMessage<Vec2i>("MouseDown", screenCoordinates);
-	theSwitchboard.Broadcast(m);	
+//Œmiechostka - jak bêdziesz klikaæ raz lewy, raz prawy, to pokemony bêd¹ w co 2 razie wchodziæ na okienko :D
+//Chyba trzeba bêdzie zmieniæ, ¿e zamiast Remove, to ustawienie tekstu na pusty ("") i zmiana sprite'a na przezroczysty ca³y.
+//Poprawi³am te¿ chodzenie - Pikachu teraz w szerszych k¹tach chodzi w górê i w dó³, co wygl¹da chyba bardziej realistycznie.
+	if(button == MOUSE_LEFT) {
+
+		Text("HANNIBAL CANNIBAL! \n IT FUCKING RHYMES!");
+		
+		//Work in progress
+		//Analyze();
+
+		TypedMessage<Vec2i> *m = new TypedMessage<Vec2i>("GoTo", screenCoordinates);
+		theSwitchboard.Broadcast(m);
+
+	}
+
+	if(button == MOUSE_RIGHT) {
+
+		theWorld.Remove(text_screen);
+		theWorld.Remove(text);
+
+	}
+
+}
+
+void GardenManager::ReceiveMessage(Message* message) {
+
+	if (message->GetMessageName() == "GoTo") { 
+
+		std::cout << "odbiór!" << std::endl;
+
+		TypedMessage<Vec2i> *m = (TypedMessage<Vec2i>*)message;
+		Vec2i screenCoordinates = m->GetValue();
+		Vector2 worldCoordinates = MathUtil::ScreenToWorld(screenCoordinates);
+		pikachu->GoTo(worldCoordinates);
+
+	}
+
+}
+
+void GardenManager::Text(String display_text) {
+
+	close_text_frame = false;
+	text_screen->SetSprite("Resources/Images/text.png", 0, GL_CLAMP, GL_LINEAR);
+	text_screen->SetLayer(10);
+	text->SetDisplayString(display_text);
+	text->SetPosition(Vector2(-9.0, -5.0));
+	text->SetLayer(10);
+	theWorld.Add(text_screen);
+	theWorld.Add(text);
+
+}
+
+void GardenManager::Analyze() {
+
+	//tutaj bêdzie funkcja pobieraj¹ca stringa z mikrofonu
+
+	//tutaj bêdzie funkcja wyci¹gaj¹ca ze stringa podzdania z podzielonymi s³owami wg gramatyki
+
+	//powiedzmy, ¿e tagger wypluje coœ takiego:
+	String verb = "go";
+	String adjective = "yellow";
+	String noun = "pokemon";
+
+	Vector2 destination;
+
+	if(verb == "go") {
+
+		int counter;
+		
+		for(int i = 0; i < 3; i++) {
+
+			ActorSet taggedActors = theTagList.GetObjectsTagged(adjective);
+			Actor* taggedActor;
+
+			for( ActorSet::iterator itr = taggedActors.begin(); itr != taggedActors.end(); itr++ ) {
+
+				counter++;
+				taggedActor = (*itr);
+				std::cout << "Yellow pokemon of name: " << taggedActor->GetName();
+
+
+			}
+
+			if(counter > 1) {
+
+				//tu siê zapyta o wiêksz¹ precyzjê
+				//u¿ytkownik sprecyzuje i tagger wypluje:
+				adjective = "electric";
+
+				if(i == 2) {
+
+					//jeœli u¿ytkownik 3 razy nie zgadnie
+					//Pikachu wyklnie go od g³upich :D
+
+				}
+
+			}
+
+			else {
+
+				//jeœli dopracowaliœmy zapytania, to mo¿emy w koñcu wywo³aæ funkcjê,
+				//dziêki której Pikachu dojdzie do konkretnego pokemona pokemona.
+				//póki co tylko po tagach bêdzie odsiewa³, mam nadziejê dodaæ te¿ obs³ugê
+				//s³ów takich jak 'najbli¿szy' itp.
+
+
+				//UWAGA! TU SIÊ PLUJE. NIE WIEM, JAK TO ROZWIAZAC.
+				//Mamy listê wskaŸników na Aktorów. Ale ja chcê wyci¹gn¹æ zmienn¹, która jest w CollisionManager.
+				//No i krzyczy, ¿e nie ma takiej zmiennej w Actor... Chyba na pa³ê trzeba bêdzie w klasie Actor wcisn¹æ te zmienne 
+				//i ustawiæ je w pochodnej klasie CollisionManager.
+
+				//destination = taggedActor->_side;
+				//pikachu->GoTo(destination);
+
+			}
+
+		}
+
+	}
 
 }
 

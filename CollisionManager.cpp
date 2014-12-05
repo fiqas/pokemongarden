@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-CollisionManager::CollisionManager(float x, float y ,  float sx, float sy, String name, String colortag, String nametag, String typetag, Vector2 opposite, Vector2 behind, Vector2 side) {
+CollisionManager::CollisionManager(float x, float y ,  float sx, float sy, String name, String colortag, String nametag, String typetag, Vector2 front, Vector2 behind, Vector2 side) {
 
 	SetName(name);
 	SetLayer(4);
@@ -16,9 +16,9 @@ CollisionManager::CollisionManager(float x, float y ,  float sx, float sy, Strin
 	Tag(typetag);
 	InitPhysics();
 
-	SideLeftOrRight = side;    //Punkt lewy albo prawy
-	SideBack = behind;		   //Punkt za obiektem
-	SideOpposite = opposite;   //Punkt na przeciwko
+	_side = side;    //Punkt lewy albo prawy
+	_behind = behind;		   //Punkt za obiektem
+	_front = front;   //Punkt na przeciwko
 
 }
 
