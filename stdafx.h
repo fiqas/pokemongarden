@@ -8,7 +8,6 @@
 #include "GardenManager.h"
 #include "Pikachu.h"
 #include "Pokemon.h"
-#include "Object.h"
 #include "CollisionManager.h"
 
 

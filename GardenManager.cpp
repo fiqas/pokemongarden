@@ -33,9 +33,8 @@ void GardenManager::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput but
 	if(button == MOUSE_LEFT) {
 
 		Text("HANNIBAL CANNIBAL! \n IT FUCKING RHYMES!");
-		
-		//Work in progress
-		//Analyze();
+	
+		FindConcretePokemon("yellow");
 
 		TypedMessage<Vec2i> *m = new TypedMessage<Vec2i>("GoTo", screenCoordinates);
 		theSwitchboard.Broadcast(m);
@@ -90,62 +89,122 @@ void GardenManager::Analyze() {
 	String adjective = "yellow";
 	String noun = "pokemon";
 
-	Vector2 destination;
-
-	if(verb == "go") {
-
-		int counter;
+	ActorSet pokemons = FindTaggedPokemons(adjective, noun);
+	ActorSet pokemons2;
+	ActorSet pokemons3;
+	Actor* concretepokemon;
+	bool found = false;
 		
-		for(int i = 0; i < 3; i++) {
+	if(pokemons.size() > 1) {
 
-			ActorSet taggedActors = theTagList.GetObjectsTagged(adjective);
-			Actor* taggedActor;
+		Text("I don't know what are you talking about, you need to be specific.");
 
-			for( ActorSet::iterator itr = taggedActors.begin(); itr != taggedActors.end(); itr++ ) {
+		//jeœli znajdzie wiêcej obiektów spe³niaj¹cych za³o¿enia danych przez przymiotnik i rzeczownik
+		//tutaj znowu wywo³a siê funkcjê, która znowu wypluje zestaw danych
+		//powiedzmy, ¿e dostaniemy:
+		adjective = "electric";
+		noun = "pokemon";
 
-				counter++;
-				taggedActor = (*itr);
-				std::cout << "Yellow pokemon of name: " << taggedActor->GetName();
+		pokemons2 = FindTaggedPokemons(adjective, noun);
 
+		for(ActorSet::iterator itr1 = pokemons.begin(); itr1 != pokemons.end(); itr1++ ) {
 
-			}
+			for(ActorSet::iterator itr2 = pokemons2.begin(); itr2 != pokemons2.end(); itr++ ) {
 
-			if(counter > 1) {
+				if(itr1->GetName() == itr2->GetName) {
 
-				//tu siê zapyta o wiêksz¹ precyzjê
-				//u¿ytkownik sprecyzuje i tagger wypluje:
-				adjective = "electric";
-
-				if(i == 2) {
-
-					//jeœli u¿ytkownik 3 razy nie zgadnie
-					//Pikachu wyklnie go od g³upich :D
+					pokemons3.insert(itr2);
 
 				}
-
-			}
-
-			else {
-
-				//jeœli dopracowaliœmy zapytania, to mo¿emy w koñcu wywo³aæ funkcjê,
-				//dziêki której Pikachu dojdzie do konkretnego pokemona pokemona.
-				//póki co tylko po tagach bêdzie odsiewa³, mam nadziejê dodaæ te¿ obs³ugê
-				//s³ów takich jak 'najbli¿szy' itp.
-
-
-				//UWAGA! TU SIÊ PLUJE. NIE WIEM, JAK TO ROZWIAZAC.
-				//Mamy listê wskaŸników na Aktorów. Ale ja chcê wyci¹gn¹æ zmienn¹, która jest w CollisionManager.
-				//No i krzyczy, ¿e nie ma takiej zmiennej w Actor... Chyba na pa³ê trzeba bêdzie w klasie Actor wcisn¹æ te zmienne 
-				//i ustawiæ je w pochodnej klasie CollisionManager.
-
-				//destination = taggedActor->_side;
-				//pikachu->GoTo(destination);
 
 			}
 
 		}
 
 	}
+
+	if(pokemons3.size() > 1) {
+
+		Text("I don't know what are you talking about, I give up.");
+
+	}
+
+	else {
+
+		found = true;
+		concretepokemon = pokemons3.begin();
+
+	}
+
+	if(found) { 
+		
+	//jeœli znaleŸliœmy konkretnego pokemona, to mo¿emy przejœæ do wykonania czynnoœci
+	//oczywiœcie tutaj te¿ bêdzie sprawdza³, czy jest synonimem tych czasowników
+
+		if(verb == "go") {
+
+
+		}
+
+		else if(verb == "fight") {
+
+
+		}
+
+		else if(verb == "talk") {
+
+
+		}
+
+		else if(verb == "hide") {
+
+
+		}
+
+		else {
+
+			Text("I don't know what you want me to do, stupid.");
+
+		}
+
+	}
+
+}
+
+ActorSet GardenManager::FindTaggedPokemons(String adjective, String noun) {
+
+	ActorSet adjectiveTaggedActors;
+	ActorSet nounTaggedActors;
+	ActorSet bothTaggedActors;
+
+	if(!adjective.empty()) { //je¿eli przymiotnik istnieje i string nie jest pusty
+
+		adjectiveTaggedActors = theTagList.GetObjectsTagged(adjective);
+
+	}
+
+	if(!noun.empty()) { //je¿eli rzeczownik istnieje i string nie jest pusty
+
+		nounTaggedActors = theTagList.GetObjectsTagged(noun);
+
+	}
+
+
+	for(ActorSet::iterator itr1 = nounTaggedActors.begin(); itr1 != nounTaggedActors.end(); itr1++ ) {
+
+		for(ActorSet::iterator itr2 = adjectiveTaggedActors.begin(); itr2 != adjectiveTaggedActors.end(); itr++ ) {
+
+			if(itr1->GetName() == itr2->GetName) {
+
+				bothTaggedActors.insert(itr2);
+
+			}
+
+		}
+
+	}
+	
+	return bothTaggedActors;
 
 }
 
