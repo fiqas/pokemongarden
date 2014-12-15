@@ -1,0 +1,4 @@
+"Rattata"
+"purple"
+"normal"
+"rat"

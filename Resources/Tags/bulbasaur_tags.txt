@@ -1,0 +1,4 @@
+"Bulbasaur"
+"green"
+"grass"
+"plant"

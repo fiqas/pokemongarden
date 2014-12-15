@@ -1,0 +1,4 @@
+"Arbok"
+"purple"
+"poison"
+"snake"

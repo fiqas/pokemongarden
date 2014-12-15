@@ -1,0 +1,4 @@
+"Jigglypuff"
+"pink"
+"normal"
+"thing"

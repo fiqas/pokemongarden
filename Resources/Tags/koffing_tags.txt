@@ -1,0 +1,4 @@
+"Koffing"
+"purple"
+"poison"
+"ball"

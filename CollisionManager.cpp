@@ -1,8 +1,7 @@
 #include "stdafx.h"
 
-CollisionManager::CollisionManager(float x, float y ,  float sx, float sy, String name, String colortag, String nametag, String typetag, Vector2 front, Vector2 behind, Vector2 side) {
+CollisionManager::CollisionManager(float x, float y ,  float sx, float sy, String pathTag, Vector2 front, Vector2 behind, Vector2 side) {
 
-	SetName(name);
 	SetLayer(4);
 	SetPosition(x, y);
 	SetSize(sx, sy);
@@ -11,16 +10,43 @@ CollisionManager::CollisionManager(float x, float y ,  float sx, float sy, Strin
 	SetDensity(0.0f);
 	SetFriction(0.0f); 
 	SetRestitution(0.1f);
-	Tag(colortag);
-	Tag(nametag);
-	Tag(typetag);
 	InitPhysics();
 
 	_side = side;    //Punkt lewy albo prawy
 	_behind = behind;		   //Punkt za obiektem
 	_front = front;   //Punkt na przeciwko
+	
+	AddTags(pathTag);
+}
+
+void CollisionManager::AddTags(String pathTag) {
+
+	std::vector<String> tags;
+	std::fstream file;
+	file.open(pathTag, std::ios::in);
+
+	if( file.good() ) {
+		
+		String tag;
+
+		while ( !file.eof() ) {
+
+			getline(file, tag);
+			tags.push_back(tag);
+
+		}
+		
+		file.close();
+	
+	}	
+	
+	else std::cout << "Err! file : " << pathTag << " not found."  << std::endl;
+
+	SetName(tags[0]);
+	for (int i = 1; i < tags.size(); i++) Tag(tags[i]);
 
 }
+
 
 CollisionManager::~CollisionManager(void)
 {

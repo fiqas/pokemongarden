@@ -1,0 +1,4 @@
+"Psyduck"
+"yellow"
+"water"
+"duck"

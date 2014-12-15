@@ -1,0 +1,4 @@
+"Charizard"
+"red"
+"fire"
+"dragon"

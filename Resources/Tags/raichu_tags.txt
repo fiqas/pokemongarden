@@ -1,0 +1,4 @@
+"Raichu"
+"yellow"
+"electric"
+"mouse"

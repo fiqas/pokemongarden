@@ -3,8 +3,10 @@ class CollisionManager : public PhysicsActor
 {
 public:
 
+	void AddTags(String pathTag);
+
 	CollisionManager(float x, float y ,  float sx, float sy, 
-					 String name, String colortag, String nametag, String typetag,
+					 String pathTag,
 					 Vector2 opposite, Vector2 behind, Vector2 side );
 
 	~CollisionManager(void);
@@ -13,4 +15,3 @@ public:
 	Vector2 _behind;
 	Vector2 _front;
 };
-
