@@ -9,6 +9,7 @@
 #include "Pikachu.h"
 #include "Pokemon.h"
 #include "CollisionManager.h"
-
+#include "fstream"
+#include "vector"
 
 // TODO: reference additional headers your program requires here

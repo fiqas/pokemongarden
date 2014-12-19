@@ -17,9 +17,10 @@ public:
 	void Update(float dt);
 	void ReceiveMessage(Message* message);
 	void Text(String display_text);
+	void CloseText();
 
 	void Analyze();
-	ActorSet FindTaggedPokemons(String adjective, String noun);
+	void FindTaggedPokemons(ActorSet& bothTaggedActors, String adjective, String noun);
 	
 	virtual void MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button);
 
@@ -28,5 +29,6 @@ public:
 	FullScreenActor* text_screen;
 	TextActor* text;
 	bool close_text_frame;
+
 };
 

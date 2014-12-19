@@ -43,7 +43,12 @@ void CollisionManager::AddTags(String pathTag) {
 	else std::cout << "Err! file : " << pathTag << " not found."  << std::endl;
 
 	SetName(tags[0]);
-	for (int i = 1; i < tags.size(); i++) Tag(tags[i]);
+
+	for (int i = 0; i < tags.size(); i++) {
+		
+		Tag(tags[i]);
+
+	}
 
 }
 

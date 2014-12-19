@@ -6,14 +6,23 @@ GardenManager::GardenManager(void) {
 	theWorld.LoadLevel("pokemon_garden_level");	    // Wczytujemy plik ze statycznymi elementami œwiata tj. drzewa, p³ot oraz ziemia.
 	
 	pikachu = new Pikachu();
-	text = new TextActor("Console", "", TXT_Left);
-	text_screen = new FullScreenActor();
-	close_text_frame = false;
 	
 	AddPokemons();									//Funkcje dodaj¹ce odpowiednio kolzje do Pokemonów, managerów kolizji
 	AddCollisionManager();
 	
 	theWorld.Add(pikachu);
+
+	//Obsluga wyswietlanego tekstu
+
+	text = new TextActor("Console", "", TXT_Left);
+	text_screen = new FullScreenActor();
+	close_text_frame = true;
+	text_screen->SetSprite("Resources/Images/no_text.png", 0, GL_CLAMP, GL_LINEAR);
+	text_screen->SetLayer(10);
+	text->SetPosition(Vector2(-9.0, -5.0));
+	text->SetLayer(10);
+	theWorld.Add(text_screen);
+	theWorld.Add(text);
 	
 	//Tworzenie grafu po którym bêdzie porusza³ siê Pikachu.
 	BoundingBox bounds(Vector2(-20, -20), Vector2(20, 20));
@@ -23,28 +32,21 @@ GardenManager::GardenManager(void) {
 	//Pikachu reaguje na nastêpuj¹ce "wiadomoœci":
 	theSwitchboard.SubscribeTo(this, "GoTo");
 
+
 }
 
 void GardenManager::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
 	
-//Œmiechostka - jak bêdziesz klikaæ raz lewy, raz prawy, to pokemony bêd¹ w co 2 razie wchodziæ na okienko :D
-//Chyba trzeba bêdzie zmieniæ, ¿e zamiast Remove, to ustawienie tekstu na pusty ("") i zmiana sprite'a na przezroczysty ca³y.
-//Poprawi³am te¿ chodzenie - Pikachu teraz w szerszych k¹tach chodzi w górê i w dó³, co wygl¹da chyba bardziej realistycznie.
+
 	if(button == MOUSE_LEFT) {
 
-		Text("HANNIBAL CANNIBAL! \n IT FUCKING RHYMES!");
-	
-		FindTaggedPokemons("yellow", "raichu");
-
-		TypedMessage<Vec2i> *m = new TypedMessage<Vec2i>("GoTo", screenCoordinates);
-		theSwitchboard.Broadcast(m);
+		Analyze();
 
 	}
 
 	if(button == MOUSE_RIGHT) {
 
-		theWorld.Remove(text_screen);
-		theWorld.Remove(text);
+		CloseText();
 
 	}
 
@@ -54,12 +56,9 @@ void GardenManager::ReceiveMessage(Message* message) {
 
 	if (message->GetMessageName() == "GoTo") { 
 
-		std::cout << "odbiór!" << std::endl;
-
-		TypedMessage<Vec2i> *m = (TypedMessage<Vec2i>*)message;
-		Vec2i screenCoordinates = m->GetValue();
-		Vector2 worldCoordinates = MathUtil::ScreenToWorld(screenCoordinates);
-		pikachu->GoTo(worldCoordinates);
+		TypedMessage<Vector2> *m = (TypedMessage<Vector2>*)message;
+		Vector2 destinationCoordinates = m->GetValue();
+		pikachu->GoTo(destinationCoordinates);
 
 	}
 
@@ -69,12 +68,14 @@ void GardenManager::Text(String display_text) {
 
 	close_text_frame = false;
 	text_screen->SetSprite("Resources/Images/text.png", 0, GL_CLAMP, GL_LINEAR);
-	text_screen->SetLayer(10);
 	text->SetDisplayString(display_text);
-	text->SetPosition(Vector2(-9.0, -5.0));
-	text->SetLayer(10);
-	theWorld.Add(text_screen);
-	theWorld.Add(text);
+
+}
+
+void GardenManager::CloseText() {
+
+	text_screen->SetSprite("Resources/Images/no_text.png", 0, GL_CLAMP, GL_LINEAR);
+	text->SetDisplayString("");
 
 }
 
@@ -85,13 +86,12 @@ void GardenManager::Analyze() {
 	//tutaj bêdzie funkcja wyci¹gaj¹ca ze stringa podzdania z podzielonymi s³owami wg gramatyki
 
 	//powiedzmy, ¿e tagger wypluje coœ takiego:
-	String verb = "go";
-	String adjective = "yellow";
+	String verb = "hide";
+	String adjective = "red";
 	String noun = "pokemon";
 
-	ActorSet pokemons = FindTaggedPokemons(adjective, noun);
-	ActorSet pokemons2;
-	ActorSet pokemons3;
+	ActorSet pokemons;
+	FindTaggedPokemons(pokemons, adjective, noun);
 	Actor* concretepokemon;
 	bool found = false;
 		
@@ -105,7 +105,9 @@ void GardenManager::Analyze() {
 		adjective = "electric";
 		noun = "pokemon";
 
-		pokemons2 = FindTaggedPokemons(adjective, noun);
+		ActorSet pokemons2;
+		ActorSet pokemons3;
+		FindTaggedPokemons(pokemons2, adjective, noun);
 		
 
 	    for(ActorSet::iterator itr1 = pokemons.begin(); itr1 != pokemons.end(); itr1++ ) {
@@ -125,18 +127,25 @@ void GardenManager::Analyze() {
 
 		}
 
-	}
-
-	if(pokemons3.size() > 1) {
+		if(pokemons3.size() > 1) {
 
 		Text("I don't know what are you talking about, I give up.");
+
+		}
+
+		else {
+
+		found = true;
+		concretepokemon = (*pokemons3.begin());
+
+		}
 
 	}
 
 	else {
 
 		found = true;
-		concretepokemon = (*pokemons3.begin());
+		concretepokemon = (*pokemons.begin());
 
 	}
 
@@ -147,21 +156,27 @@ void GardenManager::Analyze() {
 
 		if(verb == "go") {
 
+			TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
+			theSwitchboard.Broadcast(m);
 
 		}
 
 		else if(verb == "fight") {
 
+			std::cout << "FIGHTING!" << std::endl;
 
 		}
 
 		else if(verb == "talk") {
 
+			std::cout << "TALKING!" << std::endl;
 
 		}
 
 		else if(verb == "hide") {
 
+			TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_behind);
+			theSwitchboard.Broadcast(m);
 
 		}
 
@@ -175,16 +190,15 @@ void GardenManager::Analyze() {
 
 }
 
-ActorSet GardenManager::FindTaggedPokemons(String adjective, String noun) {
+void GardenManager::FindTaggedPokemons(ActorSet& bothTaggedActors, String adjective, String noun) {
 
 	ActorSet adjectiveTaggedActors;
 	ActorSet nounTaggedActors;
-	ActorSet bothTaggedActors;
 
 	if(!adjective.empty()) { //je¿eli przymiotnik istnieje i string nie jest pusty
 
 		adjectiveTaggedActors = theTagList.GetObjectsTagged(adjective);
-
+		
 	}
 
 	if(!noun.empty()) { //je¿eli rzeczownik istnieje i string nie jest pusty
@@ -211,8 +225,6 @@ ActorSet GardenManager::FindTaggedPokemons(String adjective, String noun) {
 
 	}
 	
-	return bothTaggedActors;
-
 }
 
 void GardenManager::Update(float dt) {
@@ -234,7 +246,7 @@ void GardenManager::CreateCollisionManager(float x, float y ,  float sx, float s
 void GardenManager::AddCollisionManager() {
 
 	//Set tag name!
-	CreateCollisionManager(-9.0f, 3.8f, 1.0f, 0.7f, "big_tree_tags.txt" , Vector2(-9.2f, 2.63f), Vector2(-8.0f, 5.9f), Vector2(-7.0f, 3.8f));
+	CreateCollisionManager(-9.0f, 3.8f, 1.0f, 0.7f, "Resources/Tags/big_tree_tags.txt" , Vector2(-9.2f, 2.63f), Vector2(-8.0f, 5.9f), Vector2(-7.0f, 3.8f));
 	CreateCollisionManager(6.5f, -8.0f, 0.3f, 0.7f, "Resources/Tags/big_tree_high_with_leaves_tags.txt", Vector2(6.3f, -9.0f), Vector2(6.34f, -7.16f), Vector2(4.99f, -8.0f));
 	CreateCollisionManager(8.8f, 3.0f, 0.5f, 1.0f, "Resources/Tags/big_tree_with_leaves_tags.txt", Vector2(8.77f, 1.49f), Vector2(8.85f, 4.11f), Vector2(7.58f , 3.25f));
 	CreateCollisionManager(1.0f, 3.0f, 0.5f, 0.5f, "Resources/Tags/tree_neadles_tags.txt", Vector2(1.75f, 2.28f), Vector2(0.99f, 3.98f), Vector2(0.4f, 3.5f));
