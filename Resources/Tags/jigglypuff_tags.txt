@@ -2,3 +2,4 @@
 "pink"
 "normal"
 "thing"
+"pokemon"

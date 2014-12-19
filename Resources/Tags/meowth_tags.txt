@@ -2,3 +2,4 @@
 "white"
 "normal"
 "cat"
+"pokemon"

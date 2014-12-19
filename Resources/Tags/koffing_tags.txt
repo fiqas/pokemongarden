@@ -2,3 +2,4 @@
 "purple"
 "poison"
 "ball"
+"pokemon"

@@ -2,3 +2,4 @@
 "pink"
 "psychic"
 "lazy"
+"pokemon"
