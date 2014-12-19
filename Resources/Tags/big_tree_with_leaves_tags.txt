@@ -1,6 +1,0 @@
-tree
-big
-leafy
-green
-right
-east

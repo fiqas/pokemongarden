@@ -1,9 +1,0 @@
-tree
-big
-high
-leafy
-green 
-south
-south east
-down
-down right
