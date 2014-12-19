@@ -1,5 +1,5 @@
-"Pidgeot"
-"orange"
-"flying"
-"bird"
-"pokemon"
+Pidgeot
+orange
+flying
+bird
+pokemon

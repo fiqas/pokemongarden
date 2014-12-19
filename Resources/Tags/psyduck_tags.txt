@@ -1,5 +1,5 @@
-"Psyduck"
-"yellow"
-"water"
-"duck"
-"pokemon"
+Psyduck
+yellow
+water
+duck
+pokemon

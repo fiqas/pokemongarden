@@ -1,5 +1,5 @@
-"tree"
-"pine"
-"green"
-"medium"
-"centre"
+tree
+pine
+green
+medium
+centre

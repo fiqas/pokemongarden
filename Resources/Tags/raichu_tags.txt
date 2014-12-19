@@ -1,5 +1,5 @@
-"Raichu"
-"yellow"
-"electric"
-"mouse"
-"pokemon"
+Raichu
+yellow
+electric
+mouse
+pokemon

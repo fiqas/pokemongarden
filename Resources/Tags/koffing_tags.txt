@@ -1,5 +1,5 @@
-"Koffing"
-"purple"
-"poison"
-"ball"
-"pokemon"
+Koffing
+purple
+poison
+ball
+pokemon

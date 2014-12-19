@@ -1,5 +1,5 @@
-"Snorlax"
-"blue-white"
-"normal"
-"sleepyhead"
-"pokemon"
+Snorlax
+blue-white
+normal
+sleepyhead
+pokemon

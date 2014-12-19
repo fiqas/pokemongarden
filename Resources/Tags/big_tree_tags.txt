@@ -1,6 +1,6 @@
-"tree"
-"leafy"
-"big"
-"green" 
-"left"
-"west"
+tree
+leafy
+big
+green 
+left
+west

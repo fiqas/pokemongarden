@@ -1,5 +1,5 @@
-"Squirtle"
-"blue"
-"water"
-"turtle"
-"pokemon"
+Squirtle
+blue
+water
+turtle
+pokemon

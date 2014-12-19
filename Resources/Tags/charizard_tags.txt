@@ -1,5 +1,5 @@
-"Charizard"
-"red"
-"fire"
-"dragon"
-"pokemon"
+Charizard
+red
+fire
+dragon
+pokemon

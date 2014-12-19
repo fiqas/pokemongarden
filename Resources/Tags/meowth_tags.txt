@@ -1,5 +1,5 @@
-"Meowth"
-"white"
-"normal"
-"cat"
-"pokemon"
+Meowth
+white
+normal
+cat
+pokemon

@@ -1,5 +1,5 @@
-"Victreebel"
-"yellow"
-"grass"
-"flower"
-"pokemon"
+Victreebel
+yellow
+grass
+flower
+pokemon
