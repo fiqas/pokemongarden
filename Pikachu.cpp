@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Pikachu.h"
-
+#include <cstdlib>
 
 Pikachu::Pikachu(void) {
 
@@ -16,7 +16,19 @@ Pikachu::Pikachu(void) {
 	walkingleft = false;
 	walkingup = false;
 	walkingdown = false;
+	talkMode = false;
+	fightMode = false; 
 	_pathIndex = 0;
+
+	chat = new TextActor("Console", "", TXT_Left);
+	chat_screen = new FullScreenActor();
+	chat_screen->SetSprite("Resources/Images/text_002.png", 0, GL_CLAMP, GL_LINEAR);
+	chat_screen->SetLayer(10);
+	chat->SetPosition(Vector2(-9.0, -5.0));
+	chat->SetLayer(10);
+	theWorld.Add(chat_screen);
+	theWorld.Add(chat);
+
 
 	//Pikachu reaguje na dane komunikaty:
 
@@ -27,12 +39,13 @@ Pikachu::Pikachu(void) {
 	theSwitchboard.SubscribeTo(this, "PathPointReached");  //Osi¹gniêcie wierzcho³ka grafu
 	theSwitchboard.SubscribeTo(this, "EndPointReached");   //Zakoñczenie wyznaczonej œcie¿ki
 
+	happyPikachuSound = theSound.LoadSample("Resources/Sounds/happyPikachuSound.mp3", false);
+	sadPikachuSound = theSound.LoadSample("Resources/Sounds/sadPikachuSound.wav", false);
 }
 
 void Pikachu::GoTo(Vector2 newDestination) { 
 
 	//Funkcja tworz¹ca œcie¿kê.
-
 	Vector2List pathTest;
 
 	theSpatialGraph.GetPath(GetPosition(), newDestination, pathTest);
@@ -41,9 +54,13 @@ void Pikachu::GoTo(Vector2 newDestination) {
 
 		_pathPoints = pathTest;
 		_pathIndex = 0;
+
 		GetToNextPoint();
 
+
 	}
+
+
 
 }
 
@@ -90,6 +107,7 @@ void Pikachu::GetToNextPoint() {
 
 	MoveTo(next, time, false, "PathPointReached");
 
+	currentPosition = GetPosition();
 }
 
 double Pikachu::Angle(Vector2 position, Vector2 destination) {
@@ -115,6 +133,70 @@ void Pikachu::Update(float dt) {
 
 }
 
+void Pikachu::Fight() {
+
+	actioner = new FullScreenActor();
+	actioner -> LoadSpriteFrames(pathName, GL_CLAMP, GL_LINEAR);
+	actioner -> SetLayer(5);
+	actioner -> PlaySpriteAnimation(2.0f, SAT_OneShot, 0, 1, "Fighting");
+
+	if (pokemonType == "grass" || pokemonType == "fire" || pokemonType == "psychic" ) {
+
+		theSound.PlaySound(sadPikachuSound);
+
+	}
+
+	if (pokemonType == "water" || pokemonType == "poison" || pokemonType == "normal") {
+		
+		theSound.PlaySound(happyPikachuSound);
+
+	}
+	
+}
+
+void Pikachu::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
+	
+
+	if(button == MOUSE_RIGHT) {
+
+		chat_screen->SetSprite("Resources/Images/text_002.png", 0, GL_CLAMP, GL_LINEAR);
+		chat->SetDisplayString("");		std::cout << "zamykam zabawê" << std::endl;
+
+	}
+
+
+}
+
+void Pikachu::Talk() {
+
+	std::vector<String> chats;
+	std::fstream file;
+	file.open(pathName, std::ios::in);
+
+	if( file.good() ) {
+		
+		String line;
+
+		while ( !file.eof() ) {
+
+			getline(file, line);
+			chats.push_back(line);
+
+		}
+		
+		file.close();
+	
+	} else std::cout << "Err! file : " << pathName << " not found."  << std::endl;
+
+
+	int quote = ( std::rand() % 3 ) + 0;
+
+	chat_screen->SetSprite("Resources/Images/text_001.png", 0, GL_CLAMP, GL_LINEAR);
+	chat_screen->SetLayer(10);
+	chat->SetDisplayString(chats[quote]);
+
+}
+
 void Pikachu::ReceiveMessage(Message* message) {
 
 	if ( (message->GetMessageName() == "PathPointReached") && (message->GetSender() == this) ) { 
@@ -124,7 +206,6 @@ void Pikachu::ReceiveMessage(Message* message) {
 		if (_pathIndex < _pathPoints.size() - 1) {
 
 			//Przechodzenie do kolejnych punktów
-
 			GetToNextPoint();
 
 		}
@@ -132,17 +213,19 @@ void Pikachu::ReceiveMessage(Message* message) {
 		else {
 
 			//Kiedy przeszliœmy przez wszystkie wierzcho³ki na naszej œcie¿ce.
-
 			theSwitchboard.Broadcast(new Message("EndPointReached", this));
 			_pathPoints.clear();
 			_pathIndex = 0;
+
+			if (fightMode == true) Fight();
+			if (talkMode == true) Talk();
 
 		}
 
 	}
 
 	else if (message->GetMessageName() == "EndPointReached") {
-
+			
 			//Kiedy dotrzemy do celu warto by³oby zastopowaæ animacjê, w tym celu ustawiona zostaje odpowiednia klatka
 			//w zale¿noœci od kierunku poruszania siê postaci.
 			//Pikachu niestety nie mieli nó¿kami w czasie przechodzenia po grafie,

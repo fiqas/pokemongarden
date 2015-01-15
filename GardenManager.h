@@ -21,6 +21,7 @@ public:
 
 	void Analyze();
 	void FindTaggedPokemons(ActorSet& bothTaggedActors, String adjective, String noun);
+	void Helper(Vector2 coordinates);
 	
 	virtual void MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button);
 

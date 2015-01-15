@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <windows.h>
 
 GardenManager::GardenManager(void) {
 
@@ -17,7 +18,7 @@ GardenManager::GardenManager(void) {
 	text = new TextActor("Console", "", TXT_Left);
 	text_screen = new FullScreenActor();
 	close_text_frame = true;
-	text_screen->SetSprite("Resources/Images/no_text.png", 0, GL_CLAMP, GL_LINEAR);
+	text_screen->SetSprite("Resources/Images/text_002.png", 0, GL_CLAMP, GL_LINEAR);
 	text_screen->SetLayer(10);
 	text->SetPosition(Vector2(-9.0, -5.0));
 	text->SetLayer(10);
@@ -31,7 +32,8 @@ GardenManager::GardenManager(void) {
 
 	//Pikachu reaguje na nastêpuj¹ce "wiadomoœci":
 	theSwitchboard.SubscribeTo(this, "GoTo");
-
+	theSwitchboard.SubscribeTo(this, "Fight");
+	theSwitchboard.SubscribeTo(this, "Talk");
 
 }
 
@@ -54,28 +56,58 @@ void GardenManager::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput but
 
 void GardenManager::ReceiveMessage(Message* message) {
 
-	if (message->GetMessageName() == "GoTo") { 
+	if (message->GetMessageName() == "GoTo" ) { 
 
 		TypedMessage<Vector2> *m = (TypedMessage<Vector2>*)message;
 		Vector2 destinationCoordinates = m->GetValue();
 		pikachu->GoTo(destinationCoordinates);
+		
+	}
+
+	if (message->GetMessageName() == "Fight" ) {
+
+	
+		TypedMessage<String> *m = (TypedMessage<String>*)message;
+		String nameOfPokemon = m->GetValue();
+		String pathName = "Resources/Images/fighting scenes/" + nameOfPokemon + "_fight_001.png";
+		pikachu -> pathName = pathName;
+	
+		if (pikachu->GetPosition().X != 0) pikachu->Fight();
+		
+	}
+
+	if (message->GetMessageName() == "Talk") {
+	
+		TypedMessage<String> *m = (TypedMessage<String>*)message;
+		String nameOfPokemon = m->GetValue();
+		String pathName = "Resources/Chats/"+ nameOfPokemon + ".txt";
+		pikachu -> pathName = pathName;
+
+		if (pikachu->GetPosition().X != 0) pikachu->Talk();
 
 	}
+
 
 }
 
 void GardenManager::Text(String display_text) {
 
 	close_text_frame = false;
-	text_screen->SetSprite("Resources/Images/text.png", 0, GL_CLAMP, GL_LINEAR);
+	text_screen->SetSprite("Resources/Images/text_001.png");
 	text->SetDisplayString(display_text);
 
 }
 
 void GardenManager::CloseText() {
 
-	text_screen->SetSprite("Resources/Images/no_text.png", 0, GL_CLAMP, GL_LINEAR);
+	text_screen->SetSprite("Resources/Images/text_002.png");
 	text->SetDisplayString("");
+
+}
+
+void GardenManager::Helper(Vector2 coordinates){
+
+	pikachu->GoTo(coordinates);
 
 }
 
@@ -86,8 +118,9 @@ void GardenManager::Analyze() {
 	//tutaj bêdzie funkcja wyci¹gaj¹ca ze stringa podzdania z podzielonymi s³owami wg gramatyki
 
 	//powiedzmy, ¿e tagger wypluje coœ takiego:
-	String verb = "hide";
-	String adjective = "red";
+
+	String verb = "fight";
+	String adjective = "blue";
 	String noun = "pokemon";
 
 	ActorSet pokemons;
@@ -97,13 +130,14 @@ void GardenManager::Analyze() {
 		
 	if(pokemons.size() > 1) {
 
-		Text("I don't know what are you talking about, you need to be specific.");
+		Text("I don't know what are you talking about, \nyou need to be specific.");
 
 		//jeœli znajdzie wiêcej obiektów spe³niaj¹cych za³o¿enia danych przez przymiotnik i rzeczownik
 		//tutaj znowu wywo³a siê funkcjê, która znowu wypluje zestaw danych
 		//powiedzmy, ¿e dostaniemy:
-		adjective = "electric";
-		noun = "pokemon";
+
+		adjective = "water";
+		noun = "turtle";
 
 		ActorSet pokemons2;
 		ActorSet pokemons3;
@@ -130,7 +164,7 @@ void GardenManager::Analyze() {
 		if(pokemons3.size() > 1) {
 
 		Text("I don't know what are you talking about, I give up.");
-
+		//przez kilka sekund
 		}
 
 		else {
@@ -163,13 +197,54 @@ void GardenManager::Analyze() {
 
 		else if(verb == "fight") {
 
-			std::cout << "FIGHTING!" << std::endl;
+			if (noun == "tree") Text("I can't fight with : " + concretepokemon->GetName() + "\nI can fight just with pokemons.");
+			
+			else {
 
+				pikachu->fightMode = true;
+
+				if (pikachu -> GetPosition() != concretepokemon->_side) {
+		
+					TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
+					theSwitchboard.Broadcast(m);
+
+				}
+
+				TypedMessage<String> *m = new TypedMessage<String>("Fight", concretepokemon->GetName());
+				theSwitchboard.Broadcast(m);
+
+				if		(concretepokemon->IsTagged("electric"))	pikachu->pokemonType = "electric";
+				else if (concretepokemon->IsTagged("psychic"))	pikachu->pokemonType = "psychic";
+				else if (concretepokemon->IsTagged("normal"))	pikachu->pokemonType = "normal";
+				else if (concretepokemon->IsTagged("grass"))	pikachu->pokemonType = "grass";
+				else if (concretepokemon->IsTagged("water"))	pikachu->pokemonType = "water";
+				else if (concretepokemon->IsTagged("poison"))	pikachu->pokemonType = "poison";
+				else if (concretepokemon->IsTagged("fire"))		pikachu->pokemonType = "fire";
+		
+
+			}
+		
 		}
 
 		else if(verb == "talk") {
 
-			std::cout << "TALKING!" << std::endl;
+			if (noun != "pokemon") Text( "I can't talk to : " + concretepokemon->GetName() + "\nI can talk just with pokemons.");
+
+			else {
+			
+				pikachu->talkMode = true;
+
+				if (pikachu->GetPosition() != concretepokemon->_side) {
+				
+					TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
+					theSwitchboard.Broadcast(m);
+
+				} 
+
+				TypedMessage<String> *m = new TypedMessage<String>("Talk", concretepokemon->GetName());
+				theSwitchboard.Broadcast(m);
+
+			}
 
 		}
 
@@ -179,6 +254,7 @@ void GardenManager::Analyze() {
 			theSwitchboard.Broadcast(m);
 
 		}
+
 
 		else {
 
@@ -198,22 +274,31 @@ void GardenManager::FindTaggedPokemons(ActorSet& bothTaggedActors, String adject
 	if(!adjective.empty()) { //je¿eli przymiotnik istnieje i string nie jest pusty
 
 		adjectiveTaggedActors = theTagList.GetObjectsTagged(adjective);
+
+		if(noun.empty()) bothTaggedActors = theTagList.GetObjectsTagged(adjective);
 		
-	}
+	} 
 
 	if(!noun.empty()) { //je¿eli rzeczownik istnieje i string nie jest pusty
 
 		nounTaggedActors = theTagList.GetObjectsTagged(noun);
-
+	
+		if(adjective.empty()) bothTaggedActors = theTagList.GetObjectsTagged(noun);
 	}
+	
+
 
 
 	for(ActorSet::iterator itr1 = nounTaggedActors.begin(); itr1 != nounTaggedActors.end(); itr1++ ) {
+
+		if (nounTaggedActors.empty() || adjectiveTaggedActors.empty()) break;
 
 		for(ActorSet::iterator itr2 = adjectiveTaggedActors.begin(); itr2 != adjectiveTaggedActors.end(); itr2++ ) {
 
 			Actor* targetActor1 = (*itr1);
 			Actor* targetActor2 = (*itr2);
+
+			
 
 			if(targetActor1->GetName() == targetActor2->GetName()) {
 
@@ -260,7 +345,7 @@ void GardenManager::AddCollisionManager() {
 	CreateCollisionManager(5.0f, 8.5f, 1.0f, 0.1f, "Resources/Tags/koffing_tags.txt", Vector2(5.04f, 8.0f), Vector2( 5.1f, 10.19f), Vector2(3.91f, 8.97f));
 	CreateCollisionManager(6.0f, -0.9f, 1.0f, 0.1f, "Resources/Tags/snorlax_tags.txt", Vector2(5.88f, -1.28f), Vector2(6.04f, -0.12f), Vector2( 4.58f, -0.41f));
 	CreateCollisionManager(-10.0f, -1.5f, 1.0f, 0.1f, "Resources/Tags/charizard_tags.txt", Vector2(-10.0f , -1.92f), Vector2(-9.63f, 0.66f), Vector2(-8.31f, -1.28f));
-	CreateCollisionManager(9.0f, -1.5f, 1.0f, 0.1f, "Resources/Tags/squirtle_tags.txt", Vector2(8.87f, -2.38f), Vector2(8.93, -0.6f), Vector2(7.8f, 1.22f));
+	CreateCollisionManager(9.0f, -1.5f, 1.0f, 0.1f, "Resources/Tags/squirtle_tags.txt", Vector2(8.87f, -2.38f), Vector2(8.93, -0.6f), Vector2(8.8f, 0.22f));
 	CreateCollisionManager(-0.5f, 7.0f, 1.0f, 0.1f,  "Resources/Tags/meowth_tags.txt", Vector2(-0.48f, 5.97f), Vector2( -0.51f, 7.7f), Vector2(-1.53f, 7.19f));
 	CreateCollisionManager(6.0f, 2.5f, 1.0f, 0.1f, "Resources/Tags/pidgeot_tags.txt", Vector2(6.04f, 1.82f), Vector2(6.09f, 3.27f), Vector2(4.85f, 2.82f));
 	CreateCollisionManager(-5.0f, -5.7f, 1.0f, 0.1f, "Resources/Tags/raichu_tags.txt", Vector2(-4.96f, -6.46f), Vector2(-4.8f, -4.62f), Vector2(-6.12f, -5.08f));
