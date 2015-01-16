@@ -41,6 +41,7 @@ Pikachu::Pikachu(void) {
 
 	happyPikachuSound = theSound.LoadSample("Resources/Sounds/happyPikachuSound.mp3", false);
 	sadPikachuSound = theSound.LoadSample("Resources/Sounds/sadPikachuSound.wav", false);
+	tada = theSound.LoadSample("Resources/Sounds/tada.mp3", false);
 }
 
 void Pikachu::GoTo(Vector2 newDestination) { 
@@ -138,17 +139,18 @@ void Pikachu::Fight() {
 	actioner = new FullScreenActor();
 	actioner -> LoadSpriteFrames(pathName, GL_CLAMP, GL_LINEAR);
 	actioner -> SetLayer(5);
-	actioner -> PlaySpriteAnimation(2.0f, SAT_OneShot, 0, 1, "Fighting");
 
-	if (pokemonType == "grass" || pokemonType == "fire" || pokemonType == "psychic" ) {
+	if (pokemonType == "grass" || pokemonType == "fire" || pokemonType == "psychic" || pokemonType == "electric" ) {
 
 		theSound.PlaySound(sadPikachuSound);
+		actioner -> PlaySpriteAnimation(4.0f, SAT_OneShot, 0, 1, "Fighting");
 
 	}
 
 	if (pokemonType == "water" || pokemonType == "poison" || pokemonType == "normal") {
 		
 		theSound.PlaySound(happyPikachuSound);
+		actioner -> PlaySpriteAnimation(2.0f, SAT_OneShot, 0, 1, "Fighting");
 
 	}
 	
@@ -160,8 +162,7 @@ void Pikachu::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
 	if(button == MOUSE_RIGHT) {
 
 		chat_screen->SetSprite("Resources/Images/text_002.png", 0, GL_CLAMP, GL_LINEAR);
-		chat->SetDisplayString("");		std::cout << "zamykam zabawê" << std::endl;
-
+		chat->SetDisplayString("");
 	}
 
 

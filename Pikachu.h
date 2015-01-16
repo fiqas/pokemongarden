@@ -42,6 +42,7 @@ public:
 
 	AngelSampleHandle happyPikachuSound;
 	AngelSampleHandle sadPikachuSound;
+	AngelSampleHandle tada;
 
 	Vector2List _pathPoints; 
 	unsigned int _pathIndex; 

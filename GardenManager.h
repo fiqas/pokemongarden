@@ -18,10 +18,10 @@ public:
 	void ReceiveMessage(Message* message);
 	void Text(String display_text);
 	void CloseText();
+	void SynonymsLoader();
 
 	void Analyze();
 	void FindTaggedPokemons(ActorSet& bothTaggedActors, String adjective, String noun);
-	void Helper(Vector2 coordinates);
 	
 	virtual void MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button);
 
@@ -30,6 +30,11 @@ public:
 	FullScreenActor* text_screen;
 	TextActor* text;
 	bool close_text_frame;
+
+	std::vector<String> synonymsOfFight;
+	std::vector<String> synonymsOfTalk;
+	std::vector<String> synonymsOfHide;
+	std::vector<String> synonymsOfGo;
 
 };
 

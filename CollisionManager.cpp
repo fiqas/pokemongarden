@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
-CollisionManager::CollisionManager(float x, float y ,  float sx, float sy, String pathTag, Vector2 front, Vector2 behind, Vector2 side) {
+CollisionManager::CollisionManager(float x, float y ,  float sx, float sy, String pathTag, Vector2 front, Vector2 side, Vector2 behind) {
 
 	SetLayer(4);
 	SetPosition(x, y);
 	SetSize(sx, sy);
 	SetShapeType(PhysicsActor::SHAPETYPE_BOX);
-	SetColor(1.0f, 0.0f, 0.0f);
+	SetColor(1.0f, 0.0f, 0.0f, 0.0f);
 	SetDensity(0.0f);
 	SetFriction(0.0f); 
 	SetRestitution(0.1f);
