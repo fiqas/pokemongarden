@@ -1,5 +1,5 @@
 Charizard
-red
-fire
-dragon
+czerwony
+ognisty
+smok
 pokemon

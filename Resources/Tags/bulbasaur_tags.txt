@@ -1,5 +1,5 @@
 Bulbasaur
-green
-grass
-plant
+zielony
+roœlinny
+roœlina
 pokemon

@@ -1,5 +1,5 @@
 Pidgeot
-orange
-flying
-bird
+pomarañczowy
+normalny
+ptak
 pokemon

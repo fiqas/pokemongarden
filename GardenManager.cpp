@@ -170,14 +170,17 @@ void GardenManager::Analyze() {
 	//tutaj bêdzie funkcja wyci¹gaj¹ca ze stringa podzdania z podzielonymi s³owami wg gramatyki
 	//powiedzmy, ¿e tagger wypluje coœ takiego:
 
-	String verb = "leŸæ";
-	String adjective = "Squirtle";
+	String verb = "walczyæ";
+	String adjective = "¿ó³ty";
 	String noun = "pokemon";
-
+	std::cout << adjective << std::endl;
 	ActorSet pokemons;
+
 	FindTaggedPokemons(pokemons, adjective, noun);
 	Actor* concretepokemon;
 	bool found = false;
+
+
 
 	if(pokemons.size() > 1) {
 
@@ -187,8 +190,8 @@ void GardenManager::Analyze() {
 		//tutaj znowu wywo³a siê funkcjê, która znowu wypluje zestaw danych
 		//powiedzmy, ¿e dostaniemy:
 
-		String adjectivePrecised = "mouse";
-		String nounPrecised = "electric";
+		String adjectivePrecised = "mysz";
+		String nounPrecised = "elektryczny";
 
 		ActorSet pokemons2;
 		ActorSet pokemons3;
@@ -265,13 +268,13 @@ void GardenManager::Analyze() {
 				TypedMessage<String> *m = new TypedMessage<String>("Fight", concretepokemon->GetName());
 				theSwitchboard.Broadcast(m);
 
-				if		(concretepokemon->IsTagged("electric"))	pikachu->pokemonType = "electric";
-				else if (concretepokemon->IsTagged("psychic"))	pikachu->pokemonType = "psychic";
-				else if (concretepokemon->IsTagged("normal"))	pikachu->pokemonType = "normal";
-				else if (concretepokemon->IsTagged("grass"))	pikachu->pokemonType = "grass";
-				else if (concretepokemon->IsTagged("water"))	pikachu->pokemonType = "water";
-				else if (concretepokemon->IsTagged("poison"))	pikachu->pokemonType = "poison";
-				else if (concretepokemon->IsTagged("fire"))		pikachu->pokemonType = "fire";
+				if		(concretepokemon->IsTagged("elektryczny"))	pikachu->pokemonType = "elektryczny";
+				else if (concretepokemon->IsTagged("psychiczny"))	pikachu->pokemonType = "psychiczny";
+				else if (concretepokemon->IsTagged("normalny"))	pikachu->pokemonType = "normalny";
+				else if (concretepokemon->IsTagged("roœlinny"))	pikachu->pokemonType = "roœlinny";
+				else if (concretepokemon->IsTagged("wodny"))	pikachu->pokemonType = "wodny";
+				else if (concretepokemon->IsTagged("truj¹cy"))	pikachu->pokemonType = "truj¹cy";
+				else if (concretepokemon->IsTagged("ognisty"))		pikachu->pokemonType = "ognisty";
 		
 
 			}
@@ -347,6 +350,7 @@ void GardenManager::FindTaggedPokemons(ActorSet& bothTaggedActors, String adject
 	for(ActorSet::iterator itr1 = nounTaggedActors.begin(); itr1 != nounTaggedActors.end(); itr1++ ) {
 
 		if (nounTaggedActors.empty() || adjectiveTaggedActors.empty()) break;
+		else if (nounTaggedActors.empty() && adjectiveTaggedActors.empty()) break;
 
 		for(ActorSet::iterator itr2 = adjectiveTaggedActors.begin(); itr2 != adjectiveTaggedActors.end(); itr2++ ) {
 

@@ -140,14 +140,14 @@ void Pikachu::Fight() {
 	actioner -> LoadSpriteFrames(pathName, GL_CLAMP, GL_LINEAR);
 	actioner -> SetLayer(5);
 
-	if (pokemonType == "grass" || pokemonType == "fire" || pokemonType == "psychic" || pokemonType == "electric" ) {
+	if (pokemonType == "trawiasty" || pokemonType == "ognisty" || pokemonType == "psychiczny" || pokemonType == "elektryczny" ) {
 
 		theSound.PlaySound(sadPikachuSound);
 		actioner -> PlaySpriteAnimation(4.0f, SAT_OneShot, 0, 1, "Fighting");
 
 	}
 
-	if (pokemonType == "water" || pokemonType == "poison" || pokemonType == "normal") {
+	if (pokemonType == "wodny" || pokemonType == "truj¹cy" || pokemonType == "normalny") {
 		
 		theSound.PlaySound(happyPikachuSound);
 		actioner -> PlaySpriteAnimation(2.0f, SAT_OneShot, 0, 1, "Fighting");

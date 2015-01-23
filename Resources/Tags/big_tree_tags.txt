@@ -1,0 +1,7 @@
+oak
+tree
+leafy
+big
+green 
+left
+west
