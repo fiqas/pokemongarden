@@ -31,9 +31,8 @@ public:
 	bool walkingleft;
 	bool walkingup;
 	bool walkingdown;
-	bool fightMode;
-	bool talkMode;
 	bool close_chat_frame;
+
 
 	String pathName;
 	String pokemonType;
@@ -49,6 +48,9 @@ public:
 
 	FullScreenActor* chat_screen;
 	TextActor* chat;
+	bool fightMode;
+	bool talkMode;	
+	bool finished;
 
 };
 

@@ -20,21 +20,36 @@ public:
 	void CloseText();
 	void SynonymsLoader();
 
-	void Analyze();
-	void FindTaggedPokemons(ActorSet& bothTaggedActors, String adjective, String noun);
-	
-	virtual void MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button);
-
-
 	Pikachu* pikachu;
 	FullScreenActor* text_screen;
 	TextActor* text;
 	bool close_text_frame;
 
+	struct Forms {
+
+		String noun;
+		String verb;
+		String adjective;
+
+	};
+
+	void DoThings();
+	bool Analyze(Forms sentence);
+	void FindTaggedPokemons(ActorSet& bothTaggedActors, String adjective, String noun);
+	
+	virtual void MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button);
+
 	std::vector<String> synonymsOfFight;
 	std::vector<String> synonymsOfTalk;
 	std::vector<String> synonymsOfHide;
 	std::vector<String> synonymsOfGo;
+	std::vector <Forms> SentencesList;
+	int sentences_counter;
+	int* pointer;
+	bool* fightMode_pointer;
+	bool* talkMode_pointer;
+	bool* finished_pointer;
+	bool done;
 
 };
 

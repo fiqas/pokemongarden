@@ -18,6 +18,7 @@ Pikachu::Pikachu(void) {
 	walkingdown = false;
 	talkMode = false;
 	fightMode = false; 
+	finished = false;
 	_pathIndex = 0;
 
 	chat = new TextActor("Console", "", TXT_Left);
@@ -134,6 +135,19 @@ void Pikachu::Update(float dt) {
 
 }
 
+
+void Pikachu::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
+	
+
+	if(button == MOUSE_RIGHT) {
+
+		chat_screen->SetSprite("Resources/Images/text_002.png", 0, GL_CLAMP, GL_LINEAR);
+		chat->SetDisplayString("");
+	}
+
+
+}
+
 void Pikachu::Fight() {
 
 	actioner = new FullScreenActor();
@@ -153,19 +167,10 @@ void Pikachu::Fight() {
 		actioner -> PlaySpriteAnimation(2.0f, SAT_OneShot, 0, 1, "Fighting");
 
 	}
+
+	finished = true;
+	fightMode = false;
 	
-}
-
-void Pikachu::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
-	
-
-	if(button == MOUSE_RIGHT) {
-
-		chat_screen->SetSprite("Resources/Images/text_002.png", 0, GL_CLAMP, GL_LINEAR);
-		chat->SetDisplayString("");
-	}
-
-
 }
 
 void Pikachu::Talk() {
@@ -174,7 +179,7 @@ void Pikachu::Talk() {
 	std::fstream file;
 	file.open(pathName, std::ios::in);
 
-	if( file.good() ) {
+	if(file.good()) {
 		
 		String line;
 
@@ -195,6 +200,9 @@ void Pikachu::Talk() {
 	chat_screen->SetSprite("Resources/Images/text_001.png", 0, GL_CLAMP, GL_LINEAR);
 	chat_screen->SetLayer(10);
 	chat->SetDisplayString(chats[quote]);
+
+	finished = true;
+	talkMode = false;
 
 }
 
@@ -217,7 +225,7 @@ void Pikachu::ReceiveMessage(Message* message) {
 			theSwitchboard.Broadcast(new Message("EndPointReached", this));
 			_pathPoints.clear();
 			_pathIndex = 0;
-
+			finished = true;
 			if (fightMode == true) Fight();
 			if (talkMode == true) Talk();
 
