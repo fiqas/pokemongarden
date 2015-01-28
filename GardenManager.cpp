@@ -1,6 +1,25 @@
 #include "stdafx.h"
 #include <windows.h>
 #include <algorithm>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <locale>
+#include <codecvt>
+#include <cstdio>
+#include <io.h>
+#include <fcntl.h>
+
+struct Forms {
+
+	String noun;
+	String verb;
+	String adjective;
+	String nounPrecised;
+	String adjectivePrecised;
+
+};
+
 
 GardenManager::GardenManager(void) {
 
@@ -164,162 +183,179 @@ void GardenManager::SynonymsLoader() {
 
 }
 
+
+
 void GardenManager::Analyze() {
 
-	//tutaj bêdzie funkcja pobieraj¹ca stringa z mikrofonu
-	//tutaj bêdzie funkcja wyci¹gaj¹ca ze stringa podzdania z podzielonymi s³owami wg gramatyki
-	//powiedzmy, ¿e tagger wypluje coœ takiego:
+	Forms partOfSentence;
+	int status;
+	std::vector <Forms> SentencesList;
+	std::fstream fileOutput;
+	fileOutput.open("output.txt", std::ios::in);
 
-	String verb = "walczyæ";
-	String adjective = "¿ó³ty";
-	String noun = "pokemon";
-	std::cout << adjective << std::endl;
-	ActorSet pokemons;
+	if( fileOutput.good() ) {
+		
+		String words;
 
-	FindTaggedPokemons(pokemons, adjective, noun);
-	Actor* concretepokemon;
-	bool found = false;
+		while ( !fileOutput.eof() ) {
+
+			getline(fileOutput, partOfSentence.verb);
+			getline(fileOutput, partOfSentence.adjective);
+			getline(fileOutput, partOfSentence.noun);
+
+			SentencesList.push_back(partOfSentence);
+			
+		}
+		
+		fileOutput.close();
+	
+	}	
 
 
+	for (int i = 0; i < SentencesList.size(); i++) {
+		
+		ActorSet pokemons;
 
-	if(pokemons.size() > 1) {
+		FindTaggedPokemons(pokemons, SentencesList[i].adjective, SentencesList[i].noun);
+		Actor* concretepokemon;
+		bool found = false;
 
-		Text("I don't know what are you talking about, \nyou need to be specific.");
+		std::cout << SentencesList[i].noun << std::endl;
+		std::cout << SentencesList[i].verb << std::endl;
 
-		//jeœli znajdzie wiêcej obiektów spe³niaj¹cych za³o¿enia danych przez przymiotnik i rzeczownik
-		//tutaj znowu wywo³a siê funkcjê, która znowu wypluje zestaw danych
-		//powiedzmy, ¿e dostaniemy:
+		if(pokemons.size() > 1) {
 
-		String adjectivePrecised = "mysz";
-		String nounPrecised = "elektryczny";
+			Text("I don't know what are you talking about, \nyou need to be specific.");
 
-		ActorSet pokemons2;
-		ActorSet pokemons3;
-		FindTaggedPokemons(pokemons2, adjectivePrecised, nounPrecised);
+			//partOfSentence.adjectivePrecised = wordsList[3];
+			//partOfSentence.nounPrecised = wordsList[4];
+
+			ActorSet pokemons2;
+			ActorSet pokemons3;
+			//FindTaggedPokemons(pokemons2, partOfSentence.adjectivePrecised, partOfSentence.nounPrecised);
 		
 
-	    for(ActorSet::iterator itr1 = pokemons.begin(); itr1 != pokemons.end(); itr1++ ) {
+			for(ActorSet::iterator itr1 = pokemons.begin(); itr1 != pokemons.end(); itr1++ ) {
 
-			for(ActorSet::iterator itr2 = pokemons2.begin(); itr2 != pokemons2.end(); itr2++ ) {
+				for(ActorSet::iterator itr2 = pokemons2.begin(); itr2 != pokemons2.end(); itr2++ ) {
 
-				Actor* targetActor1 = (*itr1);
-				Actor* targetActor2 = (*itr2);
+					Actor* targetActor1 = (*itr1);
+					Actor* targetActor2 = (*itr2);
 
-				if(targetActor1->GetName() == targetActor2->GetName()) {
+					if(targetActor1->GetName() == targetActor2->GetName()) {
 
-					pokemons3.insert(targetActor1);
+						pokemons3.insert(targetActor1);
+
+					}
 
 				}
 
 			}
 
-		}
+			if(pokemons3.size() > 1) {
 
-		if(pokemons3.size() > 1) {
+				Text("I don't know what are you talking about, I give up.");
+				//przez kilka sekund
+			}
 
-		Text("I don't know what are you talking about, I give up.");
-		//przez kilka sekund
+			else {
+
+			found = true;
+			concretepokemon = (*pokemons3.begin());
+
+			}
+
 		}
 
 		else {
 
-		found = true;
-		concretepokemon = (*pokemons3.begin());
+			found = true;
+			concretepokemon = (*pokemons.begin());
 
 		}
 
-	}
-
-	else {
-
-		found = true;
-		concretepokemon = (*pokemons.begin());
-
-	}
-
-	if(found) { 
+		if(found) { 
 		
-	//jeœli znaleŸliœmy konkretnego pokemona, to mo¿emy przejœæ do wykonania czynnoœci
-	//oczywiœcie tutaj te¿ bêdzie sprawdza³, czy jest synonimem tych czasowników
+		//jeœli znaleŸliœmy konkretnego pokemona, to mo¿emy przejœæ do wykonania czynnoœci
+		//oczywiœcie tutaj te¿ bêdzie sprawdza³, czy jest synonimem tych czasowników
 
-		if(std::find(synonymsOfGo.begin(), synonymsOfGo.end(), verb)!=synonymsOfGo.end()) {
-			std::cout << verb << std::endl;
-			TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
-			theSwitchboard.Broadcast(m);
+			if(std::find(synonymsOfGo.begin(), synonymsOfGo.end(), SentencesList[i].verb)!=synonymsOfGo.end()) {
 
-		}
-
-		else if(std::find(synonymsOfFight.begin(), synonymsOfFight.end(), verb)!=synonymsOfFight.end()) {
-
-			if (!concretepokemon->IsTagged("pokemon")) Text("I can't fight with : " + concretepokemon->GetName() + "\nI can fight just with pokemons.");
-			
-			else {
-
-				pikachu->fightMode = true;
-				std::cout << verb << std::endl;
-
-				if (pikachu -> GetPosition() != concretepokemon->_side) {
-		
-					TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
-					theSwitchboard.Broadcast(m);
-
-				}
-
-				TypedMessage<String> *m = new TypedMessage<String>("Fight", concretepokemon->GetName());
+				TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
 				theSwitchboard.Broadcast(m);
 
-				if		(concretepokemon->IsTagged("elektryczny"))	pikachu->pokemonType = "elektryczny";
-				else if (concretepokemon->IsTagged("psychiczny"))	pikachu->pokemonType = "psychiczny";
-				else if (concretepokemon->IsTagged("normalny"))	pikachu->pokemonType = "normalny";
-				else if (concretepokemon->IsTagged("roœlinny"))	pikachu->pokemonType = "roœlinny";
-				else if (concretepokemon->IsTagged("wodny"))	pikachu->pokemonType = "wodny";
-				else if (concretepokemon->IsTagged("truj¹cy"))	pikachu->pokemonType = "truj¹cy";
-				else if (concretepokemon->IsTagged("ognisty"))		pikachu->pokemonType = "ognisty";
-		
-
 			}
+
+			else if(std::find(synonymsOfFight.begin(), synonymsOfFight.end(), SentencesList[i].verb)!=synonymsOfFight.end()) {
+
+				if (!concretepokemon->IsTagged("pokemon")) Text("I can't fight with : " + concretepokemon->GetName() + "\nI can fight just with pokemons.");
+			
+				else {
+
+					pikachu->fightMode = true;
+
+					if (pikachu -> GetPosition() != concretepokemon->_side) {
 		
-		}
+						TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
+						theSwitchboard.Broadcast(m);
 
-		else if(std::find(synonymsOfTalk.begin(), synonymsOfTalk.end(), verb)!=synonymsOfTalk.end()) {
+					}
+
+					TypedMessage<String> *m = new TypedMessage<String>("Fight", concretepokemon->GetName());
+					theSwitchboard.Broadcast(m);
+
+					if		(concretepokemon->IsTagged("elektryczny"))	pikachu->pokemonType = "elektryczny";
+					else if (concretepokemon->IsTagged("psychiczny"))	pikachu->pokemonType = "psychiczny";
+					else if (concretepokemon->IsTagged("normalny"))	pikachu->pokemonType = "normalny";
+					else if (concretepokemon->IsTagged("roœlinny"))	pikachu->pokemonType = "roœlinny";
+					else if (concretepokemon->IsTagged("wodny"))	pikachu->pokemonType = "wodny";
+					else if (concretepokemon->IsTagged("truj¹cy"))	pikachu->pokemonType = "truj¹cy";
+					else if (concretepokemon->IsTagged("ognisty"))		pikachu->pokemonType = "ognisty";
+		
+
+				}
+		
+			}
+
+			else if(std::find(synonymsOfTalk.begin(), synonymsOfTalk.end(), SentencesList[i].verb)!=synonymsOfTalk.end()) {
+
+				if (!concretepokemon->IsTagged("pokemon")) Text( "I can't talk to : " + concretepokemon->GetName() + "\nI can talk just with pokemons.");
+
+				else {
 			
-			std::cout << verb << std::endl;
-			if (!concretepokemon->IsTagged("pokemon")) Text( "I can't talk to : " + concretepokemon->GetName() + "\nI can talk just with pokemons.");
+					pikachu->talkMode = true;
 
-			else {
-			
-				pikachu->talkMode = true;
-
-				if (pikachu->GetPosition() != concretepokemon->_side) {
+					if (pikachu->GetPosition() != concretepokemon->_side) {
 				
-					TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
+						TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
+						theSwitchboard.Broadcast(m);
+
+					} 
+
+					TypedMessage<String> *m = new TypedMessage<String>("Talk", concretepokemon->GetName());
 					theSwitchboard.Broadcast(m);
 
-				} 
+				}
 
-				TypedMessage<String> *m = new TypedMessage<String>("Talk", concretepokemon->GetName());
+			}	
+
+			else if(std::find(synonymsOfHide.begin(), synonymsOfHide.end(), SentencesList[i].verb)!=synonymsOfHide.end()) {
+
+				TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_behind);
 				theSwitchboard.Broadcast(m);
+
+			}
+
+
+			else {
+
+				Text("I don't know what you want me to do, stupid.");
 
 			}
 
 		}
 
-		else if(std::find(synonymsOfHide.begin(), synonymsOfHide.end(), verb)!=synonymsOfHide.end()) {
-
-			std::cout << verb << std::endl;
-			std::cout << concretepokemon -> GetName() << std::endl;
-			TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_behind);
-			theSwitchboard.Broadcast(m);
-
-		}
-
-
-		else {
-
-			Text("I don't know what you want me to do, stupid.");
-
-		}
-
+		
 	}
 
 }
@@ -366,7 +402,7 @@ void GardenManager::FindTaggedPokemons(ActorSet& bothTaggedActors, String adject
 			}
 
 		}
-
+		
 	}
 	
 }
