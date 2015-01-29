@@ -4,4 +4,9 @@ biæ
 laæ
 pojedynkowaæ
 zmagaæ
-fight
+nie walczyæ
+nie wojowaæ
+nie biæ
+nie laæ
+nie pojedynkowaæ
+nie zmagaæ

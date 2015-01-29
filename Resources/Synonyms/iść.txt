@@ -8,4 +8,13 @@ leŸæ
 przemieszczaæ
 ruszaæ
 udawaæ
-go
+nie iœæ
+nie chodziæ
+nie zmierzaæ
+nie maszerowaæ
+nie wêdrowaæ
+nie dreptaæ
+nie leŸæ
+nie przemieszczaæ
+nie ruszaæ
+nie udawaæ

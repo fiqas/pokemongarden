@@ -6,4 +6,12 @@ dyskutowaæ
 debatowaæ
 gadaæ
 gawêdziæ
-talk
+nie rozmawiaæ
+nie mówiæ
+nie konwersowaæ
+nie dialogowaæ
+nie dyskutowaæ
+nie debatowaæ
+nie gadaæ
+nie gawêdziæ
+nie talk

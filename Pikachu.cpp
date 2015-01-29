@@ -5,7 +5,6 @@
 Pikachu::Pikachu(void) {
 
 	//ustawienia pikachu
-
 	SetName("Pikachu");
 	SetPosition(0,0);
 	LoadSpriteFrames("Resources/Images/pikachu/pikachu_001.png", GL_CLAMP, GL_LINEAR);
@@ -16,22 +15,25 @@ Pikachu::Pikachu(void) {
 	walkingleft = false;
 	walkingup = false;
 	walkingdown = false;
+
 	talkMode = false;
 	fightMode = false; 
 	_pathIndex = 0;
 
-	chat = new TextActor("Console", "", TXT_Left);
+	actioner = new FullScreenActor();
+
 	chat_screen = new FullScreenActor();
 	chat_screen->SetSprite("Resources/Images/text_002.png", 0, GL_CLAMP, GL_LINEAR);
 	chat_screen->SetLayer(10);
+
+	chat = new TextActor("Console", "", TXT_Left);
 	chat->SetPosition(Vector2(-9.0, -5.0));
 	chat->SetLayer(10);
+
 	theWorld.Add(chat_screen);
 	theWorld.Add(chat);
 
-
 	//Pikachu reaguje na dane komunikaty:
-
 	theSwitchboard.SubscribeTo(this, "GoingLeft");
 	theSwitchboard.SubscribeTo(this, "GoingRight");
 	theSwitchboard.SubscribeTo(this, "GoingUp");
@@ -42,13 +44,21 @@ Pikachu::Pikachu(void) {
 	happyPikachuSound = theSound.LoadSample("Resources/Sounds/happyPikachuSound.mp3", false);
 	sadPikachuSound = theSound.LoadSample("Resources/Sounds/sadPikachuSound.wav", false);
 	tada = theSound.LoadSample("Resources/Sounds/tada.mp3", false);
+
+}
+
+Pikachu::~Pikachu(void) {
+
+	delete chat;
+	delete chat_screen;
+	delete actioner;
+
 }
 
 void Pikachu::GoTo(Vector2 newDestination) { 
 
 	//Funkcja tworz¹ca œcie¿kê.
 	Vector2List pathTest;
-
 	theSpatialGraph.GetPath(GetPosition(), newDestination, pathTest);
 	
 	if (pathTest.size() > 0) {
@@ -58,10 +68,7 @@ void Pikachu::GoTo(Vector2 newDestination) {
 
 		GetToNextPoint();
 
-
 	}
-
-
 
 }
 
@@ -77,38 +84,16 @@ void Pikachu::GetToNextPoint() {
 
 	//Opracowanie w któr¹ stronê Pikachu wykona ruch.
 
-	if ((angle >= 0 && angle < 30) || (angle <= 360 && angle > 330)) {
-
-		theSwitchboard.Broadcast(new Message("GoingRight"));
-	}
-
-	else if (angle >= 30 && angle < 150) {
-
-		theSwitchboard.Broadcast(new Message("GoingUp"));
-
-	}
-
-	else if (angle >= 150 && angle < 210) {
-
-		theSwitchboard.Broadcast(new Message("GoingLeft"));
-
-	}
-
-	else if (angle >= 210 && angle <= 330) {
-
-		theSwitchboard.Broadcast(new Message("GoingDown"));
-
-	}
-
-	else {
-
-		theSwitchboard.Broadcast(new Message("Standing"));
-
-	}
+	if ((angle >= 0 && angle < 30) || (angle <= 360 && angle > 330)) theSwitchboard.Broadcast(new Message("GoingRight"));
+	else if (angle >= 30 && angle < 150) theSwitchboard.Broadcast(new Message("GoingUp"));
+	else if (angle >= 150 && angle < 210) theSwitchboard.Broadcast(new Message("GoingLeft"));
+	else if (angle >= 210 && angle <= 330) theSwitchboard.Broadcast(new Message("GoingDown"));
+	else theSwitchboard.Broadcast(new Message("Standing"));
 
 	MoveTo(next, time, false, "PathPointReached");
 
 	currentPosition = GetPosition();
+
 }
 
 double Pikachu::Angle(Vector2 position, Vector2 destination) {
@@ -134,11 +119,22 @@ void Pikachu::Update(float dt) {
 
 }
 
+void Pikachu::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
+	
+
+	if(button == MOUSE_RIGHT) {
+
+		chat_screen->SetSprite("Resources/Images/text_002.png", 0, GL_CLAMP, GL_LINEAR);
+		chat->SetDisplayString("");
+	}
+
+
+}
+
 void Pikachu::Fight() {
 
-	actioner = new FullScreenActor();
-	actioner -> LoadSpriteFrames(pathName, GL_CLAMP, GL_LINEAR);
-	actioner -> SetLayer(5);
+	actioner->LoadSpriteFrames(pathName, GL_CLAMP, GL_LINEAR);
+	actioner->SetLayer(5);
 
 	if (pokemonType == "trawiasty" || pokemonType == "ognisty" || pokemonType == "psychiczny" || pokemonType == "elektryczny" ) {
 
@@ -154,23 +150,14 @@ void Pikachu::Fight() {
 
 	}
 	
-}
-
-void Pikachu::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
-	
-
-	if(button == MOUSE_RIGHT) {
-
-		chat_screen->SetSprite("Resources/Images/text_002.png", 0, GL_CLAMP, GL_LINEAR);
-		chat->SetDisplayString("");
-	}
-
+	fightMode = false;
 
 }
+
+
 
 void Pikachu::Talk() {
 
-	std::cout << talkMode << std::endl;
 	std::vector<String> chats;
 	std::fstream file;
 	file.open(pathName, std::ios::in);
@@ -192,11 +179,11 @@ void Pikachu::Talk() {
 
 
 	int quote = ( std::rand() % 3 ) + 0;
-
 	chat_screen->SetSprite("Resources/Images/text_001.png", 0, GL_CLAMP, GL_LINEAR);
 	chat_screen->SetLayer(10);
 	chat->SetDisplayString(chats[quote]);
 
+	talkMode = false;
 
 }
 
@@ -206,12 +193,9 @@ void Pikachu::ReceiveMessage(Message* message) {
 
 		//Zosta³a odebrana wiadomoœæ o dotarciu do wierzcho³ka grafu, ktory jest zawarty w naszej œcie¿ce.
 		
-		if (_pathIndex < _pathPoints.size() - 1) {
+		if (_pathIndex < _pathPoints.size() - 1) GetToNextPoint();
 
-			//Przechodzenie do kolejnych punktów
-			GetToNextPoint();
-
-		}
+		
 
 		else {
 
@@ -223,9 +207,7 @@ void Pikachu::ReceiveMessage(Message* message) {
 			if (fightMode == true) Fight();
 			if (talkMode == true) Talk();
 
-			fightMode = false;
-			talkMode = false;
-			std::cout << talkMode << std::endl;
+
 		}
 
 	}
@@ -237,29 +219,10 @@ void Pikachu::ReceiveMessage(Message* message) {
 			//Pikachu niestety nie mieli nó¿kami w czasie przechodzenia po grafie,
 			//dopiero robi to po zatrzymaniu siê. Dziêki temu nie mieli nó¿kami w nieskoñczonoœæ.
 
-			if (walkingright) {
-
-				SetSpriteFrame(13);						
-
-			}
-
-			else if (walkingleft) {
-
-				SetSpriteFrame(9);
-				
-			}
-
-			else if (walkingup) {
-				
-				SetSpriteFrame(5);
-
-			}
-
-			else {
-
-				SetSpriteFrame(1);
-
-			}
+		if (walkingright) SetSpriteFrame(13);						
+		else if (walkingleft) SetSpriteFrame(9);
+		else if (walkingup) SetSpriteFrame(5);
+		else SetSpriteFrame(1);		
 
 	}
 
@@ -311,9 +274,5 @@ void Pikachu::ReceiveMessage(Message* message) {
 void Pikachu::Render() {
 
 	Actor::Render();
-
-}
-
-Pikachu::~Pikachu(void) {
 
 }

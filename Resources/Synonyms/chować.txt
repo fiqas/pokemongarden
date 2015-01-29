@@ -4,4 +4,9 @@ skrywaæ
 kryæ
 zaszywaæ
 znikaæ
-hide
+nie chowaæ
+nie ukrywaæ
+nie skrywaæ
+nie kryæ
+nie zaszywaæ
+nie znikaæ

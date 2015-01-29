@@ -12,9 +12,9 @@ CollisionManager::CollisionManager(float x, float y ,  float sx, float sy, Strin
 	SetRestitution(0.1f);
 	InitPhysics();
 
-	_side = side;    //Punkt lewy albo prawy
-	_behind = behind;		   //Punkt za obiektem
-	_front = front;   //Punkt na przeciwko
+	_side = side;			 //Punkt lewy albo prawy
+	_behind = behind;		 //Punkt za obiektem
+	_front = front;			 //Punkt na przeciwko
 	
 	AddTags(pathTag);
 }

@@ -20,7 +20,6 @@ public:
 	void CloseText();
 	void SynonymsLoader();
 	void DoThings();
-
 	void Analyze(int toDo);
 	void FindTaggedPokemons(ActorSet& bothTaggedActors, String adjective, String noun);
 	
@@ -33,7 +32,9 @@ public:
 	FullScreenActor* pikachuOnAcid;
 	TextActor* text;
 	bool close_text_frame;
+	
 	int counter;
+	int* counterPtr;
 
 	struct Forms {
 
@@ -50,7 +51,8 @@ public:
 	std::vector<String> synonymsOfGo;
 	std::vector <Forms> SentencesList;
 
-
+	String specified_adjective;
+	String specified_noun;
 
 };
 

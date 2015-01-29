@@ -1,14 +1,5 @@
 #include "stdafx.h"
 #include <windows.h>
-#include <algorithm>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <locale>
-#include <codecvt>
-#include <cstdio>
-#include <io.h>
-#include <fcntl.h>
 
 
 GardenManager::GardenManager(void) {
@@ -17,24 +8,25 @@ GardenManager::GardenManager(void) {
 	theWorld.LoadLevel("pokemon_garden_level");	    // Wczytujemy plik ze statycznymi elementami œwiata tj. drzewa, p³ot oraz ziemia.
 	
 	pikachu = new Pikachu();
-	
 	AddPokemons();									//Funkcje dodaj¹ce odpowiednio kolzje do Pokemonów, managerów kolizji
 	AddCollisionManager();
 	
 	theWorld.Add(pikachu);
 
 	//Obsluga wyswietlanego tekstu
-
-	text = new TextActor("Console", "", TXT_Left);
 	text_screen = new FullScreenActor();
-	close_text_frame = true;
 	text_screen->SetSprite("Resources/Images/text_002.png", 0, GL_CLAMP, GL_LINEAR);
 	text_screen->SetLayer(10);
+	
+	text = new TextActor("Console", "", TXT_Left);
 	text->SetPosition(Vector2(-9.0, -5.0));
 	text->SetLayer(10);
+	close_text_frame = true;
+
 	theWorld.Add(text_screen);
 	theWorld.Add(text);
 	
+
 	//Tworzenie grafu po którym bêdzie porusza³ siê Pikachu.
 	BoundingBox bounds(Vector2(-20, -20), Vector2(20, 20));
 	theSpatialGraph.CreateGraph( 1.0f, bounds);
@@ -46,8 +38,20 @@ GardenManager::GardenManager(void) {
 	theSwitchboard.SubscribeTo(this, "Talk");
 
 	SynonymsLoader();
-	counter = 0;
 	DoThings();
+	counterPtr = &counter;
+	*counterPtr = 0;
+
+}
+
+GardenManager::~GardenManager(void) {
+
+	delete pikachu;
+	delete text;
+	delete text_screen;
+	delete counterPtr;
+	delete pikachuOnAcid;
+
 }
 
 void GardenManager::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
@@ -56,31 +60,24 @@ void GardenManager::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput but
 
 	if(button == MOUSE_LEFT) {
 
-		if (counter < SentencesList.size()) Analyze(counter);
+		if (*counterPtr < SentencesList.size()) Analyze(*counterPtr);
 		
 		else {
 
 			pikachuOnAcid = new FullScreenActor();
-			pikachuOnAcid -> LoadSpriteFrames("Resources/Images/pikachuOnAcid_001.jpg", GL_CLAMP, GL_LINEAR);
+			pikachuOnAcid -> LoadSpriteFrames("Resources/Images/pikachuOnAcid_001.png", GL_CLAMP, GL_LINEAR);
 			pikachuOnAcid -> SetLayer(5);
 			pikachuOnAcid -> PlaySpriteAnimation(4.0f, SAT_OneShot, 0, 1, "drugs");
-
 			theWorld.Add(pikachuOnAcid);
-			
-			std::cout << "Chyba Ciê popierdoli³o synek" << std::endl;
-		
+				
 		}
 
-
-		counter ++; 
-	}
-
-	if(button == MOUSE_RIGHT) {
-
-		CloseText();
+		*counterPtr = *counterPtr +1; 
 
 	}
 
+	if(button == MOUSE_RIGHT) CloseText();
+	
 }
 
 void GardenManager::ReceiveMessage(Message* message) {
@@ -121,7 +118,6 @@ void GardenManager::ReceiveMessage(Message* message) {
 
 void GardenManager::Text(String display_text) {
 
-	close_text_frame = false;
 	text_screen->SetSprite("Resources/Images/text_001.png");
 	text->SetDisplayString(display_text);
 
@@ -193,7 +189,6 @@ void GardenManager::SynonymsLoader() {
 void GardenManager::DoThings() {
 
 	Forms partOfSentence;
-	int status;
 	std::fstream fileOutput;
 	fileOutput.open("output.txt", std::ios::in);
 
@@ -223,21 +218,20 @@ void GardenManager::Analyze(int toDo) {
 	ActorSet pokemons;
 
 	FindTaggedPokemons(pokemons, SentencesList[toDo].adjective, SentencesList[toDo].noun);
+	
 	bool found = false;
 
-	std::cout << SentencesList[toDo].noun << std::endl;
-	std::cout << SentencesList[toDo].verb << std::endl;
-
 	if(pokemons.size() > 1) {
+		
+		std::cout << "Pikachu nie wie co zrobiæ, musisz doprecyzowaæ : " << std::endl;
 
-		Text("I don't know what are you talking about, \nyou need to be specific.");
-
-			//partOfSentence.adjectivePrecised = wordsList[3];
-			//partOfSentence.nounPrecised = wordsList[4];
+		std::cin >> specified_adjective;
+		std::cin >> specified_noun;
 
 		ActorSet pokemons2;
 		ActorSet pokemons3;
-			//FindTaggedPokemons(pokemons2, partOfSentence.adjectivePrecised, partOfSentence.nounPrecised);
+		
+		FindTaggedPokemons(pokemons2, specified_adjective, specified_noun);
 		
 
 		for(ActorSet::iterator itr1 = pokemons.begin(); itr1 != pokemons.end(); itr1++ ) {
@@ -257,16 +251,17 @@ void GardenManager::Analyze(int toDo) {
 
 		}
 
-		if(pokemons3.size() > 1) {
 
-			Text("I don't know what are you talking about, I give up.");
+		if(pokemons3.size() > 1 || pokemons3.size() == 0) {
+
+			Text("Poddaje sie, jesteœ zbyt g³upi \nby zostaæ trenerem pokemon...");
 			//przez kilka sekund
 		}
 
 		else {
 
-		found = true;
-		concretepokemon = (*pokemons3.begin());
+			found = true;
+			concretepokemon = (*pokemons3.begin());
 
 		}
 
@@ -285,38 +280,52 @@ void GardenManager::Analyze(int toDo) {
 	//oczywiœcie tutaj te¿ bêdzie sprawdza³, czy jest synonimem tych czasowników
 
 		if(std::find(synonymsOfGo.begin(), synonymsOfGo.end(), SentencesList[toDo].verb)!=synonymsOfGo.end()) {
+				
+			int found = SentencesList[toDo].verb.find("nie");
 
-			TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
-			theSwitchboard.Broadcast(m);
+			if (found < 0) {
+
+				TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
+				theSwitchboard.Broadcast(m);
+			}
+
+			else Text("Jak nie to nie.");
 
 		}
 
 		else if(std::find(synonymsOfFight.begin(), synonymsOfFight.end(), SentencesList[toDo].verb)!=synonymsOfFight.end()) {
 
-			if (!concretepokemon->IsTagged("pokemon")) Text("I can't fight with : " + concretepokemon->GetName() + "\nI can fight just with pokemons.");
-			
+			if (!concretepokemon->IsTagged("pokemon")) Text("Nie mogê walczyæ z : " + concretepokemon->GetName() + "\nwalczê tylko z pokemonami.");
+	 
 			else {
+				
+				int found = SentencesList[toDo].verb.find("nie");
 
-				pikachu->fightMode = true;
+				if (found < 0) {
 
-				if (pikachu -> GetPosition() != concretepokemon->_side) {
+					pikachu->fightMode = true;
+
+					if (pikachu -> GetPosition() != concretepokemon->_side) {
 		
-					TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
+						TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
+						theSwitchboard.Broadcast(m);
+
+					}
+
+					TypedMessage<String> *m = new TypedMessage<String>("Fight", concretepokemon->GetName());
 					theSwitchboard.Broadcast(m);
 
+					if		(concretepokemon->IsTagged("elektryczny")) pikachu->pokemonType = "elektryczny";
+					else if (concretepokemon->IsTagged("psychiczny")) pikachu->pokemonType = "psychiczny";
+					else if (concretepokemon->IsTagged("normalny")) pikachu->pokemonType = "normalny";
+					else if (concretepokemon->IsTagged("roœlinny")) pikachu->pokemonType = "roœlinny";
+					else if (concretepokemon->IsTagged("wodny")) pikachu->pokemonType = "wodny";
+					else if (concretepokemon->IsTagged("truj¹cy")) pikachu->pokemonType = "truj¹cy";
+					else if (concretepokemon->IsTagged("ognisty")) pikachu->pokemonType = "ognisty";
+				
 				}
 
-				TypedMessage<String> *m = new TypedMessage<String>("Fight", concretepokemon->GetName());
-				theSwitchboard.Broadcast(m);
-
-				if		(concretepokemon->IsTagged("elektryczny"))	pikachu->pokemonType = "elektryczny";
-				else if (concretepokemon->IsTagged("psychiczny"))	pikachu->pokemonType = "psychiczny";
-				else if (concretepokemon->IsTagged("normalny"))	pikachu->pokemonType = "normalny";
-				else if (concretepokemon->IsTagged("roœlinny"))	pikachu->pokemonType = "roœlinny";
-				else if (concretepokemon->IsTagged("wodny"))	pikachu->pokemonType = "wodny";
-				else if (concretepokemon->IsTagged("truj¹cy"))	pikachu->pokemonType = "truj¹cy";
-				else if (concretepokemon->IsTagged("ognisty"))		pikachu->pokemonType = "ognisty";
-		
+				else Text("Jak nie to nie.");
 
 			}
 		
@@ -324,38 +333,54 @@ void GardenManager::Analyze(int toDo) {
 
 		else if(std::find(synonymsOfTalk.begin(), synonymsOfTalk.end(), SentencesList[toDo].verb)!=synonymsOfTalk.end()) {
 
-			if (!concretepokemon->IsTagged("pokemon")) Text( "I can't talk to : " + concretepokemon->GetName() + "\nI can talk just with pokemons.");
+			if (!concretepokemon->IsTagged("pokemon")) Text("Nie mogê rozmawiaæ z : " + concretepokemon->GetName() + "\nRozmawiam tylko z pokemonami.");
 
 			else {
-			
-				pikachu->talkMode = true;
 
-				if (pikachu->GetPosition() != concretepokemon->_side) {
+				int found = SentencesList[toDo].verb.find("nie");
+			
+				if (found < 0) {
+
+					pikachu->talkMode = true;
+
+					if (pikachu->GetPosition() != concretepokemon->_side) {
 				
-					TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
+						TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_side);
+						theSwitchboard.Broadcast(m);
+
+					} 
+
+					TypedMessage<String> *m = new TypedMessage<String>("Talk", concretepokemon->GetName());
 					theSwitchboard.Broadcast(m);
 
 				} 
-
-				TypedMessage<String> *m = new TypedMessage<String>("Talk", concretepokemon->GetName());
-				theSwitchboard.Broadcast(m);
+				
+				else Text("Jak nie to nie.");
 
 			}
 
 		}	
 
 		else if(std::find(synonymsOfHide.begin(), synonymsOfHide.end(), SentencesList[toDo].verb)!=synonymsOfHide.end()) {
+			
+			int found = SentencesList[toDo].verb.find("nie");
+			
+			if (found < 0) {
 
-			TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_behind);
-			theSwitchboard.Broadcast(m);
+				TypedMessage<Vector2> *m = new TypedMessage<Vector2>("GoTo", concretepokemon->_behind);
+				theSwitchboard.Broadcast(m);
+
+			}
+
+			else Text("Jak nie to nie.");
 
 		}
 
 
 		else {
 
-			Text("I don't know what you want me to do, stupid.");
-
+			Text("Jesteœ zbyt g³upi by zostaæ trenerem pokemon.");
+			//zjarany pikaczu
 		}
 
 	}
@@ -381,6 +406,7 @@ void GardenManager::FindTaggedPokemons(ActorSet& bothTaggedActors, String adject
 		nounTaggedActors = theTagList.GetObjectsTagged(noun);
 	
 		if(adjective.empty()) bothTaggedActors = theTagList.GetObjectsTagged(noun);
+
 	}
 	
 
@@ -388,7 +414,8 @@ void GardenManager::FindTaggedPokemons(ActorSet& bothTaggedActors, String adject
 
 	for(ActorSet::iterator itr1 = nounTaggedActors.begin(); itr1 != nounTaggedActors.end(); itr1++ ) {
 
-		if (nounTaggedActors.empty() || adjectiveTaggedActors.empty()) break;
+		if	(nounTaggedActors.empty() || adjectiveTaggedActors.empty()) break;
+	
 		else if (nounTaggedActors.empty() && adjectiveTaggedActors.empty()) break;
 
 		for(ActorSet::iterator itr2 = adjectiveTaggedActors.begin(); itr2 != adjectiveTaggedActors.end(); itr2++ ) {
@@ -396,13 +423,7 @@ void GardenManager::FindTaggedPokemons(ActorSet& bothTaggedActors, String adject
 			Actor* targetActor1 = (*itr1);
 			Actor* targetActor2 = (*itr2);
 
-			
-
-			if(targetActor1->GetName() == targetActor2->GetName()) {
-
-				bothTaggedActors.insert(targetActor2);
-
-			}
+			if(targetActor1->GetName() == targetActor2->GetName()) bothTaggedActors.insert(targetActor2);
 
 		}
 		
@@ -428,7 +449,6 @@ void GardenManager::CreateCollisionManager(float x, float y ,  float sx, float s
 
 void GardenManager::AddCollisionManager() {
 
-	//Set tag name!
 	CreateCollisionManager(-9.0f, 3.8f, 1.0f, 0.7f, "Resources/Tags/big_tree_tags.txt" , Vector2(-9.2f, 2.63f), Vector2(-8.0f, 5.9f), Vector2(-7.0f, 3.8f));
 	CreateCollisionManager(6.5f, -8.0f, 0.3f, 0.7f, "Resources/Tags/big_tree_high_with_leaves_tags.txt", Vector2(6.3f, -9.0f), Vector2(6.34f, -7.16f), Vector2(4.99f, -8.0f));
 	CreateCollisionManager(8.8f, 3.0f, 0.5f, 1.0f, "Resources/Tags/big_tree_with_leaves_tags.txt", Vector2(8.77f, 1.49f), Vector2(8.85f, 4.11f), Vector2(7.58f , 3.25f));
@@ -468,9 +488,3 @@ void GardenManager::AddPokemons() {
 	CreatePokemon(-5.0f, -5.0f, 1.8f, 1.6f, "Resources/Images/pokemons/raichu_001.png");
 
 }
-
-GardenManager::~GardenManager(void) {
-
-}
-
-//Tagi na polski
