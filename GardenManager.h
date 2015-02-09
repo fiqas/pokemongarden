@@ -32,6 +32,11 @@ public:
 	FullScreenActor* pikachuOnAcid;
 	TextActor* text;
 	bool close_text_frame;
+
+	AngelSampleHandle pikachuOrder;
+	AngelSampleHandle pikachuQuestion;
+	AngelSampleHandle pikachuLaughing;
+	AngelSampleHandle acidSound;
 	
 	int counter;
 	int* counterPtr;

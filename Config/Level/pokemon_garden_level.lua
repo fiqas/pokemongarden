@@ -143,3 +143,39 @@ TreeWithLeavesHigh = {
 	
 
 }
+
+GoldStone = {
+
+	class = "Actor",
+	layer = 4,
+	position = {-5.6, -2.5},
+	sprite = "Resources/Images/objects/stone_gold.png",
+	size = {2.0, 1.0},
+	name = "zlota_skala",
+	
+
+}
+
+LayingStone = {
+
+	class = "Actor",
+	layer = 4,
+	position = {-4.4, -1.7},
+	sprite = "Resources/Images/objects/stone_laying.png",
+	size = {2.0, 1.0},
+	name = "zlota_skala",
+	
+
+}
+
+StoneWithLeaf = {
+	
+	class = "Actor",
+	layer = 4,
+	position = {2.4, -6.73},
+	sprite = "Resources/Images/objects/stone_with_leaf.png",
+	size = {2.5, 3.0},
+	name = "skala_z_lisciem",
+
+}
+

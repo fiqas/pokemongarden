@@ -1,9 +1,7 @@
-High tree
-tree
-high
-leafy
-green 
-south
-south east
-down
-down right
+wysokie
+drzewo
+liœciaste
+zielone
+po³udnie
+po³udniowy wschód
+dó³

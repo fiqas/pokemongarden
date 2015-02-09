@@ -6,7 +6,7 @@ CollisionManager::CollisionManager(float x, float y ,  float sx, float sy, Strin
 	SetPosition(x, y);
 	SetSize(sx, sy);
 	SetShapeType(PhysicsActor::SHAPETYPE_BOX);
-	SetColor(1.0f, 0.0f, 0.0f, 0.0f);
+	SetColor(1.0f, 0.0f, 0.0f, 1.0f);
 	SetDensity(0.0f);
 	SetFriction(0.0f); 
 	SetRestitution(0.1f);
@@ -17,6 +17,7 @@ CollisionManager::CollisionManager(float x, float y ,  float sx, float sy, Strin
 	_front = front;			 //Punkt na przeciwko
 	
 	AddTags(pathTag);
+
 }
 
 void CollisionManager::AddTags(String pathTag) {

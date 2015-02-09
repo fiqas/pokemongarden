@@ -39,7 +39,9 @@ public:
 
 	AngelSampleHandle happyPikachuSound;
 	AngelSampleHandle sadPikachuSound;
-	AngelSampleHandle tada;
+	AngelSampleHandle battleSound;
+	AngelSampleHandle pikachuTalking;
+	AngelSampleHandle pikachuDialoguePokemon;
 
 	Vector2List _pathPoints; 
 	unsigned int _pathIndex; 

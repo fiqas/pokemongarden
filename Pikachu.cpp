@@ -18,6 +18,7 @@ Pikachu::Pikachu(void) {
 
 	talkMode = false;
 	fightMode = false; 
+
 	_pathIndex = 0;
 
 	actioner = new FullScreenActor();
@@ -43,7 +44,8 @@ Pikachu::Pikachu(void) {
 
 	happyPikachuSound = theSound.LoadSample("Resources/Sounds/happyPikachuSound.mp3", false);
 	sadPikachuSound = theSound.LoadSample("Resources/Sounds/sadPikachuSound.wav", false);
-	tada = theSound.LoadSample("Resources/Sounds/tada.mp3", false);
+	battleSound = theSound.LoadSample("Resources/Sounds/battleSceneEpicMusic.wav", false);
+	pikachuTalking = theSound.LoadSample("Resources/Sounds/pikachuTalk.mp3", false);
 
 }
 
@@ -133,6 +135,7 @@ void Pikachu::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
 
 void Pikachu::Fight() {
 
+	std::cout << pathName << std::endl;
 	actioner->LoadSpriteFrames(pathName, GL_CLAMP, GL_LINEAR);
 	actioner->SetLayer(5);
 
@@ -146,9 +149,11 @@ void Pikachu::Fight() {
 	if (pokemonType == "wodny" || pokemonType == "truj¹cy" || pokemonType == "normalny") {
 		
 		theSound.PlaySound(happyPikachuSound);
-		actioner -> PlaySpriteAnimation(2.0f, SAT_OneShot, 0, 1, "Fighting");
+		actioner -> PlaySpriteAnimation(4.0f, SAT_OneShot, 0, 1, "Fighting");
 
 	}
+
+	theSound.PlaySound(battleSound);
 	
 	fightMode = false;
 
@@ -177,6 +182,9 @@ void Pikachu::Talk() {
 	
 	} else std::cout << "Err! file : " << pathName << " not found."  << std::endl;
 
+	theSound.PlaySound(pikachuTalking);
+	pikachuDialoguePokemon = theSound.LoadSample("Resources/Sounds/" + pokemonName + ".wav", false);
+	theSound.PlaySound(pikachuDialoguePokemon);
 
 	int quote = ( std::rand() % 3 ) + 0;
 	chat_screen->SetSprite("Resources/Images/text_001.png", 0, GL_CLAMP, GL_LINEAR);
