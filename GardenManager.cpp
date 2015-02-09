@@ -38,7 +38,6 @@ GardenManager::GardenManager(void) {
 	theSwitchboard.SubscribeTo(this, "Talk");
 
 	SynonymsLoader();
-	DoThings();
 	counterPtr = &counter;
 	*counterPtr = 0;
 
@@ -89,8 +88,13 @@ void GardenManager::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput but
 		
 		CloseText();
 
-		Vector2 coordinates = MathUtil::ScreenToWorld(screenCoordinates);
-		std::cout << coordinates.X << " " << coordinates.Y << std::endl;
+
+	}
+
+	if(button = MOUSE_MIDDLE) {
+	
+
+		DoThings();
 
 	}
 	
