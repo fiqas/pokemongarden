@@ -30,7 +30,7 @@ GardenManager::GardenManager(void) {
 	//Tworzenie grafu po którym bêdzie porusza³ siê Pikachu.
 	BoundingBox bounds(Vector2(-20, -20), Vector2(20, 20));
 	theSpatialGraph.CreateGraph( 1.0f, bounds);
-	theSpatialGraph.EnableDrawGraph(true);
+	theSpatialGraph.EnableDrawGraph(false);
 
 	//Pikachu reaguje na nastêpuj¹ce "wiadomoœci":
 	theSwitchboard.SubscribeTo(this, "GoTo");
@@ -66,15 +66,25 @@ GardenManager::~GardenManager(void) {
 
 void GardenManager::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
 	
-	
-
 	if(button == MOUSE_LEFT) {
+	
+		DoThings();
+		std::cout << *counterPtr << SentencesList.size() << std::endl;
+		std::cout << "CHUJ" << std::endl;
 
-		if (*counterPtr < SentencesList.size()) Analyze(*counterPtr);
-		
+	}
+
+	if(button == MOUSE_RIGHT) {
+
+		if (*counterPtr < SentencesList.size()) {
+			
+			Analyze(*counterPtr);
+
+		}
+
 		else {
 
-			pikachuOnAcid -> PlaySpriteAnimation(0.1f, SAT_OneShot, 0, 43, "drugs");
+			pikachuOnAcid->PlaySpriteAnimation(0.1f, SAT_OneShot, 0, 43, "drugs");
 			theSound.PlaySound(acidSound);
 			*counterPtr = 0;
 
@@ -84,17 +94,9 @@ void GardenManager::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput but
 
 	}
 
-	if(button == MOUSE_RIGHT){
+	if(button = MOUSE_MIDDLE){
 		
 		CloseText();
-
-
-	}
-
-	if(button = MOUSE_MIDDLE) {
-	
-
-		DoThings();
 
 	}
 	
