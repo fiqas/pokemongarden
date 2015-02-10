@@ -59,5 +59,7 @@ public:
 	String specified_adjective;
 	String specified_noun;
 
+	String sentence;
+
 };
 

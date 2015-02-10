@@ -66,25 +66,15 @@ GardenManager::~GardenManager(void) {
 
 void GardenManager::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput button) {
 	
-	if(button == MOUSE_LEFT) {
 	
-		DoThings();
-		std::cout << *counterPtr << SentencesList.size() << std::endl;
-		std::cout << "CHUJ" << std::endl;
 
-	}
+	if(button == MOUSE_LEFT) {
 
-	if(button == MOUSE_RIGHT) {
-
-		if (*counterPtr < SentencesList.size()) {
-			
-			Analyze(*counterPtr);
-
-		}
-
+		if (*counterPtr < SentencesList.size()) Analyze(*counterPtr);
+		
 		else {
 
-			pikachuOnAcid->PlaySpriteAnimation(0.1f, SAT_OneShot, 0, 43, "drugs");
+			pikachuOnAcid -> PlaySpriteAnimation(0.1f, SAT_OneShot, 0, 43, "drugs");
 			theSound.PlaySound(acidSound);
 			*counterPtr = 0;
 
@@ -94,15 +84,17 @@ void GardenManager::MouseDownEvent(Vec2i screenCoordinates, MouseButtonInput but
 
 	}
 
-	if(button = MOUSE_MIDDLE){
-		
-		CloseText();
+	if(button == MOUSE_RIGHT) {
+	
+
+		DoThings();
 
 	}
 	
 }
 
 void GardenManager::ReceiveMessage(Message* message) {
+
 
 	if (message->GetMessageName() == "GoTo" ) { 
 
@@ -249,7 +241,7 @@ void GardenManager::Analyze(int toDo) {
 	if(pokemons.size() > 1 || pokemons.size() == 0) {
 		
 		
-		if (pokemons.size() == 1) {
+		if (pokemons.size() > 1) {
 		
 			theSound.PlaySound(pikachuQuestion);
 
@@ -477,6 +469,14 @@ void GardenManager::FindTaggedPokemons(ActorSet& bothTaggedActors, String adject
 
 void GardenManager::Update(float dt) {
 
+	GameManager::Update(dt);
+
+	if(theInput.IsKeyDown(ANGEL_KEY_SPACE)) {
+	
+		CloseText();
+
+	}
+
 }
 
 void GardenManager::CreatePokemon(float x, float y , float sizex, float sizey, String pathName) {
@@ -517,14 +517,14 @@ void GardenManager::AddCollisionManager() {
 	CreateCollisionManager(-0.5f, -4.9f, 1.0f, 0.1f, "Resources/Tags/mew_tags.txt", Vector2(-0.79f,-5.41f),Vector2 (-1.9f,-4.46f), Vector2(0.0f,-4.1f));
 	CreateCollisionManager( -9.46f,-5.3f , 1.0f, 0.1f , "Resources/Tags/mewtwo_tags.txt", Vector2(-9.63f,-6.5f),Vector2 (-11.26f,-4.5f), Vector2(-9.38f,-3.77f));
 	CreateCollisionManager( -3.84, 4.02f, 1.0f, 0.1f , "Resources/Tags/gyarados_tags.txt", Vector2(-3.19f,2.66f),Vector2 (-4.0f,5.6f), Vector2(-4.0f,5.2f));
-	CreateCollisionManager( 2.81f, -7.58f, 1.0f, 0.1f , "Resources/Tags/skala_z_lisciem_tags.txt", Vector2(1.5f,-8.5f),Vector2 (0.68f,-6.78f), Vector2(2.7f,-5.9f));
+	CreateCollisionManager( 2.81f, -7.58f, 1.0f, 0.1f , "Resources/Tags/scyther_tags.txt", Vector2(1.5f,-8.5f),Vector2 (0.68f,-6.78f), Vector2(2.7f,-5.9f));
 	CreateCollisionManager( 10.58, 2.57f, 1.0f, 0.1f , "Resources/Tags/staryu_tags.txt", Vector2(10.5f,1.15f),Vector2 (11.8f,2.8f), Vector2(10.6f,3.2f));
 	CreateCollisionManager( 9.41, -7.7f, 1.0f, 0.1f , "Resources/Tags/licktung_tags.txt", Vector2(9.3f,-8.6f),Vector2 (7.4f,-7.2f), Vector2(9.3f,-6.8f));
 	CreateCollisionManager( -10.8f, 2.3f, 1.0f, 0.1f , "Resources/Tags/muk_tags.txt", Vector2(-10.8f,1.62f),Vector2 (-9.3f,2.82f), Vector2(-10.9f,3.2f));
 	CreateCollisionManager( -7.8f, -8.3f, 1.0f, 0.1f , "Resources/Tags/rapidash_tags.txt", Vector2(-8.1f,-8.9f),Vector2 (-9.4f,-7.7f), Vector2(-7.25f,-6.9f));
 	CreateCollisionManager( 2.29f, 0.17f, 1.0f, 0.1f , "Resources/Tags/alakazam_tags.txt", Vector2(2.5f,-0.5f),Vector2 (3.9f,0.69f), Vector2(2.3f,1.1f));
 	CreateCollisionManager( -4.4f, -8.22f, 1.0f, 0.1f , "Resources/Tags/ninetales_tags.txt", Vector2(-4.6f,-9.3f),Vector2 (-3.1f,-8.1f), Vector2(-4.7f,-7.0f));
-	//CreateCollisionManager( 8.0f, -3.42f, 1.0f, 0.1f , "Resources/Tags/caterpie_tags.txt", Vector2(7.8f,-4.1f),Vector2 (9.2f,-2.9f), Vector2(7.7f,-2.6f));
+	CreateCollisionManager( 8.0f, -3.42f, 1.0f, 0.1f , "Resources/Tags/caterpie_tags.txt", Vector2(7.8f,-4.1f),Vector2 (9.2f,-2.9f), Vector2(7.7f,-2.6f));
 
 }
 
@@ -548,13 +548,13 @@ void GardenManager::AddPokemons() {
 	CreatePokemon(-0.5f, -4.5f, 2.5f, 2.5f, "Resources/Images/pokemons/mew.png");
 	CreatePokemon(-9.5f, -4.3f,  3.0f, 3.0f, "Resources/Images/pokemons/mewtwo.png");
 	CreatePokemon(-4.17f, 4.8f,  2.5f, 2.5f, "Resources/Images/pokemons/gyarados.png");
-	//CreatePokemon(2.4f, -6.73f,  3.5f, 3.5f, "Resources/Images/pokemons/scyther.png");
+	CreatePokemon(2.4f, -6.73f,  3.5f, 3.5f, "Resources/Images/pokemons/scyther.png");
 	CreatePokemon(10.7f, 2.9f,  2.0f, 2.0f, "Resources/Images/pokemons/staryu.png");
 	CreatePokemon(9.3f, -7.3f,  2.5f, 2.5f, "Resources/Images/pokemons/licktung.png");
 	CreatePokemon(-10.8f, 3.04f,  2.0f, 2.0f, "Resources/Images/pokemons/muk.png");
 	CreatePokemon(-7.6f, -7.8f,  2.0f, 2.0f, "Resources/Images/pokemons/rapidash.png");
 	CreatePokemon(2.5f, 0.8f, 2.0f, 2.0f, "Resources/Images/pokemons/alakazam.png");
 	CreatePokemon(-4.5f, -7.8f, 2.0f, 2.0f, "Resources/Images/pokemons/ninetales.png");
-	//CreatePokemon(8.1f, -2.9f, 3.0f, 3.0f, "Resources/Images/pokemons/caterpie.png");
+	CreatePokemon(8.1f, -2.9f, 3.0f, 3.0f, "Resources/Images/pokemons/caterpie.png");
 
 }
